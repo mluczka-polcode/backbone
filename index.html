@@ -43,9 +43,9 @@
                 </span>
             </fieldset>
 
-            <span id="addPerson">add person</span>
-
             <div id="additionalPersons"></div>
+
+            <button id="addPerson">add person</button>
         </form>
 
         <script src="js/jquery-2.0.3.min.js"></script>
@@ -54,23 +54,16 @@
         <script src="js/main.js"></script>
 
         <script type="text/template" id="personTemplate">
-            <fieldset class="person">
-                <legend>Person <%- id + 1 %></legend>
+            <label for="f_<%- id %>_firstName">First name</label>
+            <input type="text" id="f_<%- id %>_firstName" name="persons[<%- id %>][firstName]" value="" placeholder="First name" />
 
-                <label for="f_<%- id %>_firstName">First name</label>
-                <input type="text" id="f_<%- id %>_firstName" name="persons[<%- id %>][firstName]" value="" placeholder="First name" />
-                <br />
+            <label for="f_<%- id %>_lastName">Last name</label>
+            <input type="text" id="f_<%- id %>_lastName" name="persons[<%- id %>][lastName]" value="" placeholder="Last name" />
 
-                <label for="f_<%- id %>_lastName">Last name</label>
-                <input type="text" id="f_<%- id %>_lastName" name="persons[<%- id %>][lastName]" value="" placeholder="Last name" />
-                <br />
+            <label for="f_<%- id %>_age">Age</label>
+            <input type="text" id="f_<%- id %>_age" name="persons[<%- id %>][age]" value="" placeholder="Age" />
 
-                <label for="f_<%- id %>_age">Age</label>
-                <input type="text" id="f_<%- id %>_age" name="persons[<%- id %>][age]" value="" placeholder="Age" />
-                <br />
-
-                <span class="removePerson">remove this person</span>
-            </fieldset>
+            <button class="removePerson">remove this person</button>
         </script>
     </body>
 </html>

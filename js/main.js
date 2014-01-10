@@ -1,9 +1,6 @@
 $(function() {
+    // Overrides persistence storage with dummy function. This enables use of `Model.destroy()` without raising an error.
     Backbone.sync = function(method, model, callback) {
-// console.info(method);
-// console.info(model);
-// console.info(success);
-// console.info(error);
         callback.success();
     };
 
@@ -27,6 +24,8 @@ $(function() {
     });
 
     var PersonView = Backbone.View.extend({
+        tagName: 'fieldset',
+
         template: _.template($('#personTemplate').html()),
 
         events: {
@@ -42,10 +41,11 @@ $(function() {
 
         remove: function() {
             this.model.destroy();
+            return false;
         },
 
         render: function() {
-            $(this.el).html(this.template({
+            $(this.el).addClass('person').html(this.template({
                 id : this.model.id
             }));
             return this;
@@ -66,7 +66,8 @@ $(function() {
         },
 
         initialize: function() {
-            _.bindAll(this, 'render', 'addPerson', 'append');
+            _.bindAll(this, 'addPerson', 'render', 'append');
+
             this.collection = new PersonList();
         },
 
@@ -78,6 +79,8 @@ $(function() {
             this.collection.add(person);
 
             this.counter += 1;
+
+            return false;
         },
 
         render: function() {
