@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Backbone Form</title>
+        <link rel="stylesheet" type="text/css" href="css/style.css" />
+    </head>
+    <body>
+        <header>
+            <h1>Conference Registration</h1>
+        </header>
+
+        <form id="conferenceForm" action="#" method="post">
+
+            <fieldset>
+                <legend>Personal data</legend>
+
+                <label for="f_firstName">First name</label>
+                <input type="text" id="f_firstName" name="firstName" value="" placeholder="First name" />
+                <br />
+
+                <label for="f_lastName">Last name</label>
+                <input type="text" id="f_lastName" name="lastName" value="" placeholder="Last name" />
+                <br />
+
+                <label for="f_phone">Phone number</label>
+                <input type="text" id="f_phone" name="phone" value="" placeholder="Phone number" />
+                <br />
+
+                <label for="f_occupations">I am </label>
+                <select id="f_occupations" name="occupations[]" multiple="multiple" size="3">
+                    <option value="developer">developer</option>
+                    <option value="entrepreneur">entrepreneur</option>
+                    <option value="student">student</option>
+                </select>
+                <br />
+
+                <input type="checkbox" id="f_hasCard" name="hasCard" value="1" />
+                <label for="f_hasCard">I have habitual client card</label>
+                <span id="cardNumber">
+                    <label for="f_cardNumber">number</label>
+                    <input type="text" id="f_cardNumber" name="cardNumber" value="" placeholder="Card number" />
+                </span>
+            </fieldset>
+
+            <span id="addPerson">add person</span>
+
+            <div id="additionalPersons"></div>
+        </form>
+
+        <script src="js/jquery-2.0.3.min.js"></script>
+        <script src="js/underscore-min.js"></script>
+        <script src="js/backbone-min.js"></script>
+        <script src="js/main.js"></script>
+
+        <script type="text/template" id="personTemplate">
+            <fieldset class="person">
+                <legend>Person <%- id + 1 %></legend>
+
+                <label for="f_<%- id %>_firstName">First name</label>
+                <input type="text" id="f_<%- id %>_firstName" name="persons[<%- id %>][firstName]" value="" placeholder="First name" />
+                <br />
+
+                <label for="f_<%- id %>_lastName">Last name</label>
+                <input type="text" id="f_<%- id %>_lastName" name="persons[<%- id %>][lastName]" value="" placeholder="Last name" />
+                <br />
+
+                <label for="f_<%- id %>_age">Age</label>
+                <input type="text" id="f_<%- id %>_age" name="persons[<%- id %>][age]" value="" placeholder="Age" />
+                <br />
+
+                <span class="removePerson">remove this person</span>
+            </fieldset>
+        </script>
+    </body>
+</html>
