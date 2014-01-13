@@ -41,6 +41,7 @@ $(function() {
 
         remove: function() {
             this.model.destroy();
+            $('#addPerson').show();
             return false;
         },
 
@@ -80,6 +81,11 @@ $(function() {
 
             this.counter += 1;
 
+            if(this.collection.length >= 3)
+            {
+                $('#addPerson').hide();
+            }
+
             return false;
         },
 
@@ -104,10 +110,11 @@ $(function() {
     var FormView = Backbone.View.extend({
         events: {
             'change #f_hasCard' : 'switchCardNumberField',
+            'submit #conferenceForm' : 'submitForm',
         },
 
-        initialize: function() {
-            _.bindAll(this, 'switchCardNumberField');
+        initialize : function() {
+            _.bindAll(this, 'switchCardNumberField', 'submitForm');
         },
 
         switchCardNumberField : function() {
@@ -121,6 +128,13 @@ $(function() {
                 $('#cardNumber').hide();
                 $('#f_cardNumber').removeAttr('required');
             }
+        },
+
+        submitForm : function() {
+            console.info('submit');
+            // AJAX call
+            // ...
+            return false;
         }
     });
 
