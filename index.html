@@ -54,28 +54,7 @@
 
             <fieldset id="courses"></fieldset>
 
-            <fieldset id="additionalResources">
-                <legend>Additional resources</legend>
-
-                <label for="f_ar_notebook">notebooks</label>
-                <input type="text" id="f_ar_notebook" name="resources[notebook]" value="" placeholder="number" />
-                <br />
-
-                <label for="f_ar_calculator">calculators</label>
-                <input type="text" id="f_ar_calculator" name="resources[calculator]" value="" placeholder="number" />
-                <br />
-
-                <label for="f_ar_computer">computers</label>
-                <input type="text" id="f_ar_computer" name="resources[computer]" value="" placeholder="number" />
-                <br />
-
-                <label for="f_ar_projector">projectors</label>
-                <input type="text" id="f_ar_projector" name="resources[projector]" value="" placeholder="number" />
-                <br />
-
-                <label for="f_ar_gadget">gadgets</label>
-                <input type="text" id="f_ar_gadget" name="resources[gadget]" value="" placeholder="number" />
-            </fieldset>
+            <fieldset id="additionalResources"></fieldset>
 
             <fieldset class="submit">
                 <input type="submit" id="f_submit" value="register" />
@@ -114,6 +93,16 @@
                     </tr>
                 <% } %>
             </table>
+        </script>
+
+        <script type="text/template" id="resourcesTemplate">
+            <legend>Additional resources</legend>
+
+            <% resources.forEach(function(res) { %>
+                <label for="f_ar_<%= res %>"><%= res %>(s)</label>
+                <input type="text" id="f_ar_<%= res %>" name="resources[<%= res %>]" value="" placeholder="number" />
+                <br />
+            <% }); %>
         </script>
 
         <script src="js/jquery-2.0.3.min.js"></script>

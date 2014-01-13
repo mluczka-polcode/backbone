@@ -1,4 +1,6 @@
 $(function() {
+    var MAX_PERSONS_COUNT = 15;
+
     // Overrides persistence storage with dummy function. This enables use of `Model.destroy()` without raising an error.
     Backbone.sync = function(method, model, callback) {
         callback.success();
@@ -81,7 +83,7 @@ $(function() {
 
             this.counter += 1;
 
-            if(this.collection.length >= 3)
+            if(this.collection.length >= MAX_PERSONS_COUNT)
             {
                 $('#addPerson').hide();
             }
@@ -114,7 +116,21 @@ $(function() {
         },
 
         initialize : function() {
-            _.bindAll(this, 'switchCardNumberField', 'submitForm');
+            _.bindAll(this, 'render', 'switchCardNumberField', 'submitForm');
+            this.render();
+        },
+
+        render: function() {
+            var coursesTemplate = _.template($('#coursesTemplate').html());
+            $('#courses', this.el).html(coursesTemplate({
+                daysCount : 3,
+                coursesCount : 3
+            }));
+
+            var resourcesTemplate = _.template($('#resourcesTemplate').html());
+            $('#additionalResources', this.el).html(resourcesTemplate({
+                resources : ['drawer', 'calculator', 'computer', 'projector', 'gadget']
+            }));
         },
 
         switchCardNumberField : function() {
@@ -140,23 +156,23 @@ $(function() {
 
     var formView = new FormView({el: 'body'});
 
-    var CoursesView = Backbone.View.extend({
-        tagName: 'fieldset',
-
-        template: _.template($('#coursesTemplate').html()),
-
-        initialize: function() {
-            _.bindAll(this, 'render');
-            this.render();
-        },
-
-        render: function() {
-            $('#courses', this.el).html(this.template({
-                daysCount : 3,
-                coursesCount : 3
-            }));
-        }
-    });
-
-    var coursesView = new CoursesView({el: 'body'});
+//     var CoursesView = Backbone.View.extend({
+//         tagName: 'fieldset',
+//
+//         template: _.template($('#coursesTemplate').html()),
+//
+//         initialize: function() {
+//             _.bindAll(this, 'render');
+//             this.render();
+//         },
+//
+//         render: function() {
+//             $('#courses', this.el).html(this.template({
+//                 daysCount : 3,
+//                 coursesCount : 3
+//             }));
+//         }
+//     });
+//
+//     var coursesView = new CoursesView({el: 'body'});
 });
