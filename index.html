@@ -10,7 +10,7 @@
             <h1>Conference Registration</h1>
         </header>
 
-        <form id="conferenceForm" action="#" method="post">
+        <form id="conferenceForm" action="index.php" method="post">
 
             <fieldset id="personalData">
                 <legend>Personal data</legend>
@@ -52,36 +52,7 @@
                 <button id="addPerson">add person</button>
             </fieldset>
 
-            <fieldset id="courses">
-                <legend>Courses</legend>
-
-                <table>
-                    <tr>
-                        <th>&nbsp;</th>
-                        <th>course #1</th>
-                        <th>course #2</th>
-                        <th>course #3</th>
-                    </tr>
-                    <tr>
-                        <th>day #1</th>
-                        <td><input type="text" id="f_course_0_0" name="course[0][0]" value="" /></td>
-                        <td><input type="text" id="f_course_0_1" name="course[0][1]" value="" /></td>
-                        <td><input type="text" id="f_course_0_2" name="course[0][2]" value="" /></td>
-                    </tr>
-                    <tr>
-                        <th>day #2</th>
-                        <td><input type="text" id="f_course_1_0" name="course[1][0]" value="" /></td>
-                        <td><input type="text" id="f_course_1_1" name="course[1][1]" value="" /></td>
-                        <td><input type="text" id="f_course_1_2" name="course[1][2]" value="" /></td>
-                    </tr>
-                    <tr>
-                        <th>day #3</th>
-                        <td><input type="text" id="f_course_2_0" name="course[2][0]" value="" /></td>
-                        <td><input type="text" id="f_course_2_1" name="course[2][1]" value="" /></td>
-                        <td><input type="text" id="f_course_2_2" name="course[2][2]" value="" /></td>
-                    </tr>
-                </table>
-            </fieldset>
+            <fieldset id="courses"></fieldset>
 
             <fieldset id="additionalResources">
                 <legend>Additional resources</legend>
@@ -122,6 +93,27 @@
             <input type="text" id="f_<%- id %>_age" name="persons[<%- id %>][age]" value="" placeholder="Age" />
 
             <button class="removePerson">remove this person</button>
+        </script>
+
+        <script type="text/template" id="coursesTemplate">
+            <legend>Courses</legend>
+
+            <table>
+                <tr>
+                    <th>&nbsp;</th>
+                    <% for(var i = 0; i < coursesCount; i++) { %>
+                        <th>course #<%= i + 1 %></th>
+                    <% } %>
+                </tr>
+                <% for(var i = 0; i < daysCount; i++) { %>
+                    <tr>
+                        <th>day #<%= i + 1 %></th>
+                        <% for(var j = 0; j < coursesCount; j++) { %>
+                            <th><input type="text" id="f_course_<%= i %>_<%= j %>" name="course[<%= i %>][<%= j %>]" value="" /></th>
+                        <% } %>
+                    </tr>
+                <% } %>
+            </table>
         </script>
 
         <script src="js/jquery-2.0.3.min.js"></script>

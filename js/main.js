@@ -106,6 +106,10 @@ $(function() {
             'change #f_hasCard' : 'switchCardNumberField',
         },
 
+        initialize: function() {
+            _.bindAll(this, 'switchCardNumberField');
+        },
+
         switchCardNumberField : function() {
             if($('#f_hasCard').prop('checked'))
             {
@@ -121,4 +125,24 @@ $(function() {
     });
 
     var formView = new FormView({el: 'body'});
+
+    var CoursesView = Backbone.View.extend({
+        tagName: 'fieldset',
+
+        template: _.template($('#coursesTemplate').html()),
+
+        initialize: function() {
+            _.bindAll(this, 'render');
+            this.render();
+        },
+
+        render: function() {
+            $('#courses', this.el).html(this.template({
+                daysCount : 3,
+                coursesCount : 3
+            }));
+        }
+    });
+
+    var coursesView = new CoursesView({el: 'body'});
 });
