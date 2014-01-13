@@ -18,7 +18,7 @@ $(function() {
 
         initialize: function(){
             this.bind("add", function(){
-                view.render();
+                listView.render();
             })
         }
     });
@@ -99,5 +99,26 @@ $(function() {
         }
     });
 
-    var view = new PersonListView({el: 'body'});
+    var listView = new PersonListView({el: 'body'});
+
+    var FormView = Backbone.View.extend({
+        events: {
+            'change #f_hasCard' : 'switchCardNumberField',
+        },
+
+        switchCardNumberField : function() {
+            if($('#f_hasCard').prop('checked'))
+            {
+                $('#cardNumber').show();
+                $('#f_cardNumber').attr('required', 'required');
+            }
+            else
+            {
+                $('#cardNumber').hide();
+                $('#f_cardNumber').removeAttr('required');
+            }
+        }
+    });
+
+    var formView = new FormView({el: 'body'});
 });

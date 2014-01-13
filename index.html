@@ -12,19 +12,19 @@
 
         <form id="conferenceForm" action="#" method="post">
 
-            <fieldset>
+            <fieldset id="personalData">
                 <legend>Personal data</legend>
 
                 <label for="f_firstName">First name</label>
-                <input type="text" id="f_firstName" name="firstName" value="" placeholder="First name" />
+                <input type="text" id="f_firstName" name="firstName" value="" placeholder="First name" required="required" />
                 <br />
 
                 <label for="f_lastName">Last name</label>
-                <input type="text" id="f_lastName" name="lastName" value="" placeholder="Last name" />
+                <input type="text" id="f_lastName" name="lastName" value="" placeholder="Last name" required="required" />
                 <br />
 
                 <label for="f_phone">Phone number</label>
-                <input type="text" id="f_phone" name="phone" value="" placeholder="Phone number" />
+                <input type="text" id="f_phone" name="phone" value="" placeholder="Phone number" required="required" />
                 <br />
 
                 <label for="f_occupations">I am </label>
@@ -37,21 +37,79 @@
 
                 <input type="checkbox" id="f_hasCard" name="hasCard" value="1" />
                 <label for="f_hasCard">I have habitual client card</label>
-                <span id="cardNumber">
-                    <label for="f_cardNumber">number</label>
+
+                <div id="cardNumber">
+                    <label for="f_cardNumber">Card number</label>
                     <input type="text" id="f_cardNumber" name="cardNumber" value="" placeholder="Card number" />
-                </span>
+                </div>
             </fieldset>
 
-            <div id="additionalPersons"></div>
+            <fieldset id="additionalPersonsContainer">
+                <legend>Additional persons</legend>
 
-            <button id="addPerson">add person</button>
+                <div id="additionalPersons"></div>
+
+                <button id="addPerson">add person</button>
+            </fieldset>
+
+            <fieldset id="courses">
+                <legend>Courses</legend>
+
+                <table>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>course #1</th>
+                        <th>course #2</th>
+                        <th>course #3</th>
+                    </tr>
+                    <tr>
+                        <th>day #1</th>
+                        <td><input type="text" id="f_course_0_0" name="course[0][0]" value="" /></td>
+                        <td><input type="text" id="f_course_0_1" name="course[0][1]" value="" /></td>
+                        <td><input type="text" id="f_course_0_2" name="course[0][2]" value="" /></td>
+                    </tr>
+                    <tr>
+                        <th>day #2</th>
+                        <td><input type="text" id="f_course_1_0" name="course[1][0]" value="" /></td>
+                        <td><input type="text" id="f_course_1_1" name="course[1][1]" value="" /></td>
+                        <td><input type="text" id="f_course_1_2" name="course[1][2]" value="" /></td>
+                    </tr>
+                    <tr>
+                        <th>day #3</th>
+                        <td><input type="text" id="f_course_2_0" name="course[2][0]" value="" /></td>
+                        <td><input type="text" id="f_course_2_1" name="course[2][1]" value="" /></td>
+                        <td><input type="text" id="f_course_2_2" name="course[2][2]" value="" /></td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <fieldset id="additionalResources">
+                <legend>Additional resources</legend>
+
+                <label for="f_ar_notebook">notebooks</label>
+                <input type="text" id="f_ar_notebook" name="resources[notebook]" value="" />
+                <br />
+
+                <label for="f_ar_calculator">calculators</label>
+                <input type="text" id="f_ar_calculator" name="resources[calculator]" value="" />
+                <br />
+
+                <label for="f_ar_computer">computers</label>
+                <input type="text" id="f_ar_computer" name="resources[computer]" value="" />
+                <br />
+
+                <label for="f_ar_projector">projectors</label>
+                <input type="text" id="f_ar_projector" name="resources[projector]" value="" />
+                <br />
+
+                <label for="f_ar_gadget">gadgets</label>
+                <input type="text" id="f_ar_gadget" name="resources[gadget]" value="" />
+            </fieldset>
+
+            <fieldset class="submit">
+                <input type="submit" id="f_submit" value="register" />
+            </fieldset>
         </form>
-
-        <script src="js/jquery-2.0.3.min.js"></script>
-        <script src="js/underscore-min.js"></script>
-        <script src="js/backbone-min.js"></script>
-        <script src="js/main.js"></script>
 
         <script type="text/template" id="personTemplate">
             <label for="f_<%- id %>_firstName">First name</label>
@@ -65,5 +123,10 @@
 
             <button class="removePerson">remove this person</button>
         </script>
+
+        <script src="js/jquery-2.0.3.min.js"></script>
+        <script src="js/underscore-min.js"></script>
+        <script src="js/backbone-min.js"></script>
+        <script src="js/main.js"></script>
     </body>
 </html>

@@ -5,3 +5,7 @@
     border: none;
 }
 */
+
+#cardNumber {
+    display: none;
+}
