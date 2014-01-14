@@ -10,3 +10,20 @@ input.number {
     width: 25px;
     text-align: right;
 }
+
+#formResult > div {
+    clear: both;
+    border: 1px solid #000;
+}
+
+#formResult > div br {
+    clear: both;
+}
+
+#formResult dt, #formResult dd {
+    float: left;
+}
+
+#formResult dt {
+    clear: left;
+}
