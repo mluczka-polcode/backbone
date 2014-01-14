@@ -16,9 +16,9 @@ $(function() {
     });
 
     var PersonList = Backbone.Collection.extend({
-        model: Person,
+        model : Person,
 
-        initialize: function(){
+        initialize : function(){
             this.bind("add", function(){
                 listView.render();
             })
@@ -26,35 +26,36 @@ $(function() {
     });
 
     var PersonView = Backbone.View.extend({
-        tagName: 'fieldset',
+        tagName : 'fieldset',
 
-        template: _.template($('#personTemplate').html()),
+        template : _.template($('#personTemplate').html()),
 
-        events: {
+        events : {
             'click .removePerson' : 'remove',
         },
 
-        initialize: function() {
+        initialize : function() {
             _.bindAll(this, 'remove', 'render', 'unrender');
 
             this.model.bind('change', this.render);
             this.model.bind('remove', this.unrender);
         },
 
-        remove: function() {
+        remove : function() {
             this.model.destroy();
             $('#addPerson').show();
             return false;
         },
 
-        render: function() {
+        render : function() {
             $(this.el).addClass('person').html(this.template({
                 id : this.model.id
             }));
+
             return this;
         },
 
-        unrender: function(){
+        unrender : function(){
             $(this.el).remove();
         }
     });
@@ -62,17 +63,17 @@ $(function() {
     var PersonListView = Backbone.View.extend({
         counter : 0,
 
-        events: {
+        events : {
             'click #addPerson' : 'addPerson',
         },
 
-        initialize: function() {
+        initialize : function() {
             _.bindAll(this, 'addPerson', 'render', 'append');
 
             this.collection = new PersonList();
         },
 
-        addPerson: function() {
+        addPerson : function() {
             var person = new Person();
             person.set({
                 id: this.counter
@@ -89,42 +90,50 @@ $(function() {
             return false;
         },
 
-        render: function() {
+        render : function() {
             var self = this;
+
             $('#additionalPersons').html('');
+
             _(this.collection.models).each(function(person) {
                 self.append(person);
             }, this);
         },
 
-        append: function(item) {
+        append : function(item) {
             var itemView = new PersonView({
                 model: item
             });
+
             $('#additionalPersons').append(itemView.render().el);
         }
     });
 
     var FormView = Backbone.View.extend({
-        events: {
+        data : {},
+
+        events : {
             'change #f_hasCard' : 'switchCardNumberField',
             'submit' : 'submitForm',
+            'click #showForm' : 'showForm'
         },
 
         initialize : function() {
-            _.bindAll(this, 'render', 'switchCardNumberField', 'submitForm');
-            this.render();
+            _.bindAll(this, 'renderForm', 'switchCardNumberField', 'submitForm', 'renderResult', 'showForm');
         },
 
-        render: function() {
+        renderForm : function() {
+            $('#conferenceForm').show();
+            $('#formResult').hide();
+
             var coursesTemplate = _.template($('#coursesTemplate').html());
-            $('#courses', this.el).html(coursesTemplate({
+            $('#courses').html(coursesTemplate({
                 daysCount : 3,
                 coursesCount : 3
             }));
 
             var resourcesTemplate = _.template($('#resourcesTemplate').html());
-            $('#additionalResources', this.el).html(resourcesTemplate({
+            $('#additionalResources').html(resourcesTemplate({
                 resources : ['drawer', 'calculator', 'computer', 'projector', 'gadget']
             }));
         },
@@ -143,24 +152,46 @@ $(function() {
         },
 
         submitForm : function() {
-            console.info('submit');
             Backbone.ajax({
                 dataType : 'json',
                 url : 'http://localhost/backbone/index.php',
                 method : 'post',
                 data : $('#conferenceForm').serialize(),
                 success : function(val) {
-                    console.info('ajax success');
-                    console.info(val);
-                    // go to result page
-                    // ...
+                    this.data = val;
+                    router.navigate('result', {trigger: true});
                 },
-                error : function(error) {
-                    console.info('ajax error');
-                    console.info(error);
+                error : function (xhr, ajaxOptions, thrownError) {
+                    alert('Error code ' + xhr.status + '\n' + thrownError);
                 }
             });
+
             return false;
+        },
+
+        renderResult : function() {
+            $('#conferenceForm').hide();
+            $('#formResult').show();
+        },
+
+        showForm : function() {
+            router.navigate('form', {trigger: true});
+        }
+    });
+
+    var Router = Backbone.Router.extend({
+        routes : {
+            '' : "showForm",
+            'form' : "showForm",
+            'result' : "showResult",
+        },
+
+        showForm : function() {
+            formView.renderForm();
+        },
+
+        showResult : function() {
+            formView.renderResult();
         }
     });
 
@@ -169,7 +200,9 @@ $(function() {
     });
 
     var formView = new FormView({
-        el : '#conferenceForm'
+        el : 'body'
     });
 
+    var router = new Router;
+    Backbone.history.start();
 });

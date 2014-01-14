@@ -61,6 +61,12 @@
             </fieldset>
         </form>
 
+        <div id="formResult">
+            There will be results
+            <br />
+            <span id="showForm">back to form view</span>
+        </div>
+
         <script type="text/template" id="personTemplate">
             <label for="f_<%= id %>_firstName">First name</label>
             <input type="text" id="f_<%= id %>_firstName" name="persons[<%= id %>][firstName]" value="" placeholder="First name" />
