@@ -71,9 +71,12 @@ $(function() {
             _.bindAll(this, 'addPerson', 'render', 'append');
 
             this.collection = new PersonList();
+
+            console.info('init');
         },
 
         addPerson : function() {
+console.info('addPerson');
             var person = new Person();
             person.set({
                 id: this.counter
@@ -98,6 +101,8 @@ $(function() {
             _(this.collection.models).each(function(person) {
                 self.append(person);
             }, this);
+
+            console.info('render');
         },
 
         append : function(item) {
@@ -109,9 +114,11 @@ $(function() {
         }
     });
 
-    var FormView = Backbone.View.extend({
-        data : {},
+    var FormData = Backbone.Model.extend({
+        defaults: {}
+    });
 
+    var FormView = Backbone.View.extend({
         events : {
             'change #f_hasCard' : 'switchCardNumberField',
             'submit' : 'submitForm',
@@ -119,21 +126,15 @@ $(function() {
         },
 
         initialize : function() {
+            this.model = new FormData;
             _.bindAll(this, 'renderForm', 'switchCardNumberField', 'submitForm', 'renderResult', 'showForm');
         },
 
         renderForm : function() {
-            $('#conferenceForm').show();
-            $('#formResult').hide();
-
-            var coursesTemplate = _.template($('#coursesTemplate').html());
-            $('#courses').html(coursesTemplate({
+            var formTemplate = _.template($('#formTemplate').html());
+            this.$el.html(formTemplate({
                 daysCount : 3,
-                coursesCount : 3
-            }));
-
-            var resourcesTemplate = _.template($('#resourcesTemplate').html());
-            $('#additionalResources').html(resourcesTemplate({
+                coursesCount : 3,
                 resources : ['drawer', 'calculator', 'computer', 'projector', 'gadget']
             }));
         },
@@ -152,13 +153,15 @@ $(function() {
         },
 
         submitForm : function() {
+            var self = this;
             Backbone.ajax({
                 dataType : 'json',
                 url : 'http://localhost/backbone/index.php',
                 method : 'post',
                 data : $('#conferenceForm').serialize(),
                 success : function(val) {
-                    this.data = val;
+                    console.info(val);
+                    self.model.set(val);
                     router.navigate('result', {trigger: true});
                 },
                 error : function (xhr, ajaxOptions, thrownError) {
@@ -170,8 +173,10 @@ $(function() {
         },
 
         renderResult : function() {
-            $('#conferenceForm').hide();
-            $('#formResult').show();
+            var template = _.template($('#resultTemplate').html());
+            this.$el.html(template({
+                data : this.model.attributes
+            }));
         },
 
         showForm : function() {
@@ -195,11 +200,11 @@ $(function() {
         }
     });
 
-    var listView = new PersonListView({
-        el : '#additionalPersonsContainer'
+    var formView = new FormView({
+        el : '#mainContainer'
     });
 
-    var formView = new FormView({
+    var listView = new PersonListView({
         el : 'body'
     });
 
