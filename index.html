@@ -19,29 +19,29 @@
                 <legend>Personal data</legend>
 
                 <label for="f_firstName">First name</label>
-                <input type="text" id="f_firstName" name="firstName" value="" placeholder="First name" required="required" />
+                <input type="text" id="f_firstName" name="firstName" value="<%- data.firstName %>" placeholder="First name" required="required" />
                 <br />
 
                 <label for="f_lastName">Last name</label>
-                <input type="text" id="f_lastName" name="lastName" value="" placeholder="Last name" required="required" />
+                <input type="text" id="f_lastName" name="lastName" value="<%- data.lastName %>" placeholder="Last name" required="required" />
                 <br />
 
                 <label for="f_phone">Phone number</label>
-                <input type="text" id="f_phone" name="phone" value="" placeholder="Phone number" required="required" />
+                <input type="text" id="f_phone" name="phone" value="<%- data.phone %>" placeholder="Phone number" required="required" />
                 <br />
 
                 <label for="f_occupations">I am </label>
                 <select id="f_occupations" name="occupations[]" multiple="multiple" size="3">
-                    <option value="developer">developer</option>
-                    <option value="entrepreneur">entrepreneur</option>
-                    <option value="student">student</option>
+                    <% for(var i = 0; i < occupations.length; i++) { %>
+                        <option value="<%- occupations[i] %>"<%= data.occupations.indexOf(occupations[i]) > -1 ? ' selected="selected"' : '' %>><%- occupations[i] %></option>
+                    <% } %>
                 </select>
                 <br />
 
-                <input type="checkbox" id="f_hasCard" name="hasCard" value="1" />
+                <input type="checkbox" id="f_hasCard" name="hasCard" value="1" <%= data.hasCard ? 'checked="checked"' : '' %> />
                 <label for="f_hasCard">I have habitual client card</label>
 
-                <div id="cardNumber">
+                <div id="cardNumber" <%= data.hasCard ? '' : 'style="display:none;"' %>>
                     <label for="f_cardNumber">Card number</label>
                     <input type="text" id="f_cardNumber" name="cardNumber" value="" placeholder="Card number" />
                 </div>
@@ -69,7 +69,7 @@
                         <tr>
                             <th>day #<%= i + 1 %></th>
                             <% for(var j = 0; j < coursesCount; j++) { %>
-                                <th><input type="text" id="f_course_<%= i %>_<%= j %>" name="course[<%= i %>][<%= j %>]" value="" maxlength="1" placeholder="priority (1-3)" /></th>
+                                <th><input type="text" id="f_course_<%= i %>_<%= j %>" name="courses[<%= i %>][<%= j %>]" value="" maxlength="1" placeholder="priority (1-3)" /></th>
                             <% } %>
                         </tr>
                     <% } %>
@@ -93,14 +93,14 @@
     </script>
 
     <script type="text/template" id="personTemplate">
-        <label for="f_<%= id %>_firstName">First name</label>
-        <input type="text" id="f_<%= id %>_firstName" name="persons[<%= id %>][firstName]" value="" placeholder="First name" />
+        <label for="f_<%= data.id %>_firstName">First name</label>
+        <input type="text" class="person-firstName" name="persons[<%= data.id %>][firstName]" value="<%- data.get('firstName') %>" placeholder="First name" />
 
-        <label for="f_<%= id %>_lastName">Last name</label>
-        <input type="text" id="f_<%= id %>_lastName" name="persons[<%= id %>][lastName]" value="" placeholder="Last name" />
+        <label for="f_<%= data.id %>_lastName">Last name</label>
+        <input type="text" class="person-lastName" name="persons[<%= data.id %>][lastName]" value="<%- data.get('lastName') %>" placeholder="Last name" />
 
-        <label for="f_<%= id %>_age">Age</label>
-        <input type="text" id="f_<%= id %>_age" name="persons[<%= id %>][age]" value="" placeholder="Age" />
+        <label for="f_<%= data.id %>_age">Age</label>
+        <input type="text" class="person-age" name="persons[<%= data.id %>][age]" value="<%- data.get('age') %>" placeholder="Age" />
 
         <button class="removePerson">remove this person</button>
     </script>
@@ -138,7 +138,7 @@
                 <br />
             <% } %>
 
-            <span id="showForm">back to form view</span>
+            <button id="showForm">back to form view</button>
         </div>
     </script>
 

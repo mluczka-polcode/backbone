@@ -11,7 +11,7 @@ $(function() {
             id        : null,
             firstName : '',
             lastName  : '',
-            age       : 0
+            age       : ''
         }
     });
 
@@ -32,6 +32,7 @@ $(function() {
 
         events : {
             'click .removePerson' : 'remove',
+            'change input' : 'update'
         },
 
         initialize : function() {
@@ -39,6 +40,14 @@ $(function() {
 
             this.model.bind('change', this.render);
             this.model.bind('remove', this.unrender);
+        },
+
+        update : function() {
+            this.model.set({
+                'firstName' : $('.person-firstName', this.el).val(),
+                'lastName'  : $('.person-lastName', this.el).val(),
+                'age'       : $('.person-age', this.el).val()
+            });
         },
 
         remove : function() {
@@ -49,7 +58,7 @@ $(function() {
 
         render : function() {
             $(this.el).addClass('person').html(this.template({
-                id : this.model.id
+                data : this.model
             }));
 
             return this;
@@ -71,12 +80,9 @@ $(function() {
             _.bindAll(this, 'addPerson', 'render', 'append');
 
             this.collection = new PersonList();
-
-            console.info('init');
         },
 
         addPerson : function() {
-console.info('addPerson');
             var person = new Person();
             person.set({
                 id: this.counter
@@ -101,8 +107,6 @@ console.info('addPerson');
             _(this.collection.models).each(function(person) {
                 self.append(person);
             }, this);
-
-            console.info('render');
         },
 
         append : function(item) {
@@ -115,7 +119,17 @@ console.info('addPerson');
     });
 
     var FormData = Backbone.Model.extend({
-        defaults: {}
+        defaults: {
+            firstName   : '',
+            lastName    : '',
+            phone       : '',
+            occupations : [],
+            hasCard     : 0,
+            cardNumber  : '',
+            persons     : [],
+            courses     : [],
+            resources   : []
+        }
     });
 
     var FormView = Backbone.View.extend({
@@ -131,12 +145,19 @@ console.info('addPerson');
         },
 
         renderForm : function() {
+            var self = this;
+
             var formTemplate = _.template($('#formTemplate').html());
+
             this.$el.html(formTemplate({
+                occupations : ['developer', 'entrepreneur', 'student'],
                 daysCount : 3,
                 coursesCount : 3,
-                resources : ['drawer', 'calculator', 'computer', 'projector', 'gadget']
+                resources : ['drawer', 'calculator', 'computer', 'projector', 'gadget'],
+                data : self.model.attributes
             }));
+
+            listView.render();
         },
 
         switchCardNumberField : function() {
@@ -160,7 +181,6 @@ console.info('addPerson');
                 method : 'post',
                 data : $('#conferenceForm').serialize(),
                 success : function(val) {
-                    console.info(val);
                     self.model.set(val);
                     router.navigate('result', {trigger: true});
                 },
