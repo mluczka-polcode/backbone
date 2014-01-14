@@ -1,3 +1,4 @@
-<pre><?php
-    print_r($_POST);
-?></pre>
+<?php
+    header('Content-Type: application/json; charset=utf8');
+    echo json_encode($_POST);
+?>

@@ -88,7 +88,7 @@
                     <tr>
                         <th>day #<%= i + 1 %></th>
                         <% for(var j = 0; j < coursesCount; j++) { %>
-                            <th><input type="text" id="f_course_<%= i %>_<%= j %>" name="course[<%= i %>][<%= j %>]" value="" placeholder="priority (1-3)" /></th>
+                            <th><input type="text" id="f_course_<%= i %>_<%= j %>" name="course[<%= i %>][<%= j %>]" value="" maxlength="1" placeholder="priority (1-3)" /></th>
                         <% } %>
                     </tr>
                 <% } %>
@@ -99,8 +99,8 @@
             <legend>Additional resources</legend>
 
             <% resources.forEach(function(res) { %>
+                <input type="text" class="number" id="f_ar_<%= res %>" name="resources[<%= res %>]" value="" placeholder="0" />
                 <label for="f_ar_<%= res %>"><%= res %>(s)</label>
-                <input type="text" id="f_ar_<%= res %>" name="resources[<%= res %>]" value="" placeholder="number" />
                 <br />
             <% }); %>
         </script>

@@ -62,8 +62,6 @@ $(function() {
     var PersonListView = Backbone.View.extend({
         counter : 0,
 
-        template: _.template($('#personTemplate').html()),
-
         events: {
             'click #addPerson' : 'addPerson',
         },
@@ -93,7 +91,7 @@ $(function() {
 
         render: function() {
             var self = this;
-            $('#additionalPersons', this.el).html('');
+            $('#additionalPersons').html('');
             _(this.collection.models).each(function(person) {
                 self.append(person);
             }, this);
@@ -103,16 +101,14 @@ $(function() {
             var itemView = new PersonView({
                 model: item
             });
-            $('#additionalPersons', this.el).append(itemView.render().el);
+            $('#additionalPersons').append(itemView.render().el);
         }
     });
-
-    var listView = new PersonListView({el: 'body'});
 
     var FormView = Backbone.View.extend({
         events: {
             'change #f_hasCard' : 'switchCardNumberField',
-            'submit #conferenceForm' : 'submitForm',
+            'submit' : 'submitForm',
         },
 
         initialize : function() {
@@ -148,31 +144,32 @@ $(function() {
 
         submitForm : function() {
             console.info('submit');
-            // AJAX call
-            // ...
+            Backbone.ajax({
+                dataType : 'json',
+                url : 'http://localhost/backbone/index.php',
+                method : 'post',
+                data : $('#conferenceForm').serialize(),
+                success : function(val) {
+                    console.info('ajax success');
+                    console.info(val);
+                    // go to result page
+                    // ...
+                },
+                error : function(error) {
+                    console.info('ajax error');
+                    console.info(error);
+                }
+            });
             return false;
         }
     });
 
-    var formView = new FormView({el: 'body'});
+    var listView = new PersonListView({
+        el : '#additionalPersonsContainer'
+    });
 
-//     var CoursesView = Backbone.View.extend({
-//         tagName: 'fieldset',
-//
-//         template: _.template($('#coursesTemplate').html()),
-//
-//         initialize: function() {
-//             _.bindAll(this, 'render');
-//             this.render();
-//         },
-//
-//         render: function() {
-//             $('#courses', this.el).html(this.template({
-//                 daysCount : 3,
-//                 coursesCount : 3
-//             }));
-//         }
-//     });
-//
-//     var coursesView = new CoursesView({el: 'body'});
+    var formView = new FormView({
+        el : '#conferenceForm'
+    });
+
 });

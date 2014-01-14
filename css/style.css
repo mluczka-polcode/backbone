@@ -9,3 +9,8 @@
 #cardNumber {
     display: none;
 }
+
+input.number {
+    width: 25px;
+    text-align: right;
+}
