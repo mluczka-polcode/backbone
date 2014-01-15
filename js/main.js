@@ -139,13 +139,14 @@ $(function() {
         events : {
             'change #f_hasCard' : 'switchCardNumberField',
             'submit' : 'submitForm',
+            'click .submit' : 'submitForm',
             'click #showForm' : 'showForm'
         },
 
         initialize : function(options) {
             this.options = options || {};
             this.model = new FormData;
-            _.bindAll(this, 'renderForm', 'switchCardNumberField', 'submitForm', 'renderResult', 'showForm');
+            _.bindAll(this, 'renderForm', 'switchCardNumberField', 'validateForm', 'validateCourses', 'submitForm', 'renderResult', 'showForm');
         },
 
         renderForm : function() {
@@ -177,7 +178,83 @@ $(function() {
             }
         },
 
+        validateForm : function() {
+            var foundEmptyField = false;
+            $('input[required="required"]', this.el).each(function(index, element) {
+                if(!foundEmptyField && !$(element).val())
+                {
+                    var label = $('label[for="' + element.id + '"]');
+                    alert('You have to fill ' + (label && label[0] ? label[0].innerText : 'all required fields'));
+                    element.focus();
+                    foundEmptyField = true;
+                }
+            });
+
+            if(foundEmptyField)
+            {
+                return false;
+            }
+
+            if(!this.validateCourses())
+            {
+                return false;
+            }
+
+            // ...
+
+            console.info('ok');
+            return false;
+        },
+
+        validateCourses : function() {
+            var coursesDays = $('tr.courses-day');
+            for(var i = 0; i < coursesDays.length; i++)
+            {
+                var priorities = [];
+
+                var coursesFields = $('input', coursesDays[i]);
+                for(var j = 0; j < coursesFields.length; j++)
+                {
+                    priorities.push(coursesFields[j].value);
+                }
+
+                var allEmpty = true;
+                var allFilled = true;
+                var allDistinct = true;
+
+                for(var k = 0; k < priorities.length; k++)
+                {
+                    if(priorities[k] == 0)
+                    {
+                        allFilled = false;
+                    }
+                    else
+                    {
+                        allEmpty = false;
+
+                        if(priorities.indexOf(priorities[k]) != k)
+                        {
+                            allDistinct = false;
+                        }
+                    }
+
+                    if(!allEmpty && (!allFilled || !allDistinct))
+                    {
+                        console.info('invalid courses', i, k);
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        },
+
         submitForm : function() {
+            if(!this.validateForm())
+            {
+                return false;
+            }
+
             var self = this;
             Backbone.ajax({
                 dataType : 'json',
@@ -228,6 +305,7 @@ $(function() {
 
     requirejs.config({
         baseUrl: 'js',
+        urlArgs: 'ts=' + new Date().getTime(),
         paths: {
             templates: '../templates'
         }

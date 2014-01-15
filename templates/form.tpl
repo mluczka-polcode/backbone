@@ -51,10 +51,13 @@
                 <% } %>
             </tr>
             <% for(var i = 0; i < daysCount; i++) { %>
-                <tr>
-                    <th>day #<%= i + 1 %></th>
+                <tr class="courses-day" courses-day="<%- i %>">
+                    <th>day #<%- i + 1 %></th>
                     <% for(var j = 0; j < coursesCount; j++) { %>
-                        <th><input type="text" id="f_course_<%= i %>_<%= j %>" name="courses[<%= i %>][<%= j %>]" value="<%- data.courses && data.courses[i] ? data.courses[i][j] : '' %>" maxlength="1" placeholder="priority (1-3)" /></th>
+                        <td>
+                            <% var value = data.courses && data.courses[i] ? data.courses[i][j] : ''; %>
+                            <input type="number" id="f_course_<%= i %>_<%= j %>" name="courses[<%= i %>][<%= j %>]" value="<%- value %>" min="0" max="<%- coursesCount %>" placeholder="1-<%- coursesCount%>" />
+                        </td>
                     <% } %>
                 </tr>
             <% } %>
@@ -65,7 +68,7 @@
         <legend>Additional resources</legend>
 
         <% resources.forEach(function(res) { %>
-            <input type="text" class="number" id="f_ar_<%= res %>" name="resources[<%= res %>]" value="<%- data.resources ? data.resources[res] : '' %>" placeholder="0" />
+            <input type="number" id="f_ar_<%= res %>" name="resources[<%= res %>]" value="<%- data.resources ? data.resources[res] : '' %>" min="0" placeholder="0" />
             <label for="f_ar_<%= res %>"><%= res %>(s)</label>
             <br />
         <% }); %>
@@ -73,5 +76,6 @@
 
     <fieldset class="submit">
         <input type="submit" id="f_submit" value="register" />
+        <span class="submit">submit</span>
     </fieldset>
 </form>

@@ -6,8 +6,8 @@
 }
 */
 
-input.number {
-    width: 25px;
+input[type=number] {
+    width: 50px;
     text-align: right;
 }
 
