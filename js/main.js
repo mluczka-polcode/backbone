@@ -139,7 +139,8 @@ $(function() {
             'click #showForm' : 'showForm'
         },
 
-        initialize : function() {
+        initialize : function(options) {
+            this.options = options || {};
             this.model = new FormData;
             _.bindAll(this, 'renderForm', 'switchCardNumberField', 'submitForm', 'renderResult', 'showForm');
         },
@@ -147,7 +148,7 @@ $(function() {
         renderForm : function() {
             var self = this;
 
-            var formTemplate = _.template($('#formTemplate').html());
+            var formTemplate = _.template(this.options.formTemplate);
 
             this.$el.html(formTemplate({
                 occupations : ['developer', 'entrepreneur', 'student'],
@@ -193,7 +194,7 @@ $(function() {
         },
 
         renderResult : function() {
-            var template = _.template($('#resultTemplate').html());
+            var template = _.template(this.options.resultTemplate);
             this.$el.html(template({
                 data : this.model.attributes
             }));
@@ -203,6 +204,12 @@ $(function() {
             router.navigate('form', {trigger: true});
         }
     });
+
+    var listView = new PersonListView({
+        el : 'body'
+    });
+
+    var formView, router;
 
     var Router = Backbone.Router.extend({
         routes : {
@@ -220,14 +227,22 @@ $(function() {
         }
     });
 
-    var formView = new FormView({
-        el : '#mainContainer'
+    requirejs.config({
+        baseUrl: 'js',
+        paths: {
+            templates: '../templates'
+        }
     });
 
-    var listView = new PersonListView({
-        el : 'body'
-    });
+    require(['text!templates/form.html', 'text!templates/result.html'], function(formTemplate, resultTemplate) {
+        formView = new FormView({
+            el : '#mainContainer',
+            formTemplate : formTemplate,
+            resultTemplate : resultTemplate
+        });
 
-    var router = new Router;
-    Backbone.history.start();
+        router = new Router;
+        Backbone.history.start();
+    })();
+
 });
