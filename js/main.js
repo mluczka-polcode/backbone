@@ -121,6 +121,14 @@ $(function() {
         }
     });
 
+    var FormDataException = function(field, message) {
+        this.field = field;
+        this.message = message;
+        this.toString = function() {
+            return this.field + ': ' + this.message;
+        };
+    };
+
     var FormData = Backbone.Model.extend({
         defaults: {
             firstName   : '',
@@ -132,7 +140,87 @@ $(function() {
             persons     : [],
             courses     : [],
             resources   : []
-        }
+        },
+
+        validate : function(attrs, options) {
+            var requiredFields = ['firstName', 'lastName', 'phone'];
+            if(attrs.hasCard)
+            {
+                requiredFields.push('cardNumber');
+            }
+
+            for(var i = 0; i < requiredFields.length; i++)
+            {
+                if(!attrs[requiredFields[i]])
+                {
+                    throw new FormDataException(requiredFields[i], 'field cannot be empty');
+                }
+            }
+
+            if(!this.validatePersons(attrs.persons) || !this.validateCourses(attrs.courses))
+            {
+                return false;
+            }
+
+            return true;
+        },
+
+        validatePersons : function(persons) {
+            var requiredFields = ['firstName', 'lastName', 'age'];
+            for(var i = 0; i < persons.length; i++)
+            {
+                for(var j = 0; j < requiredFields.length; j++)
+                {
+                    if(!persons[requiredFields[i]])
+                    {
+                        throw new FormDataException('person_' + i + '_' + requiredFields[i], 'field cannot be empty');
+                    }
+                }
+            }
+
+            return false;
+        },
+
+        validateCourses : function(courses) {
+            for(var i = 0; i < courses.length; i++)
+            {
+                var allEmpty = true;
+                var allFilled = true;
+                var allDistinct = true;
+                var priorities = [];
+
+                for(var j = 0; j < courses[i].length; j++)
+                {
+                    var priority = courses[i][j];
+
+                    if(priority == 0)
+                    {
+                        allFilled = false;
+                    }
+                    else
+                    {
+                        allEmpty = false;
+
+                        if(priorities.indexOf(priority) != -1)
+                        {
+                            allDistinct = false;
+                        }
+                    }
+
+                    if(!allEmpty && (!allFilled || !allDistinct))
+                    {
+                        message = 'Invalid course priorities for day #' + (i + 1) + '.\n';
+                        message += 'Courses\' priorities for any given day have to be either all empty or unique.';
+                        throw new FormDataException('course_' + i + '_' + j, message);
+                        return false;
+                    }
+
+                    priorities.push(priority);
+                }
+            }
+
+            return true;
+        },
     });
 
     var FormView = Backbone.View.extend({
@@ -146,7 +234,7 @@ $(function() {
         initialize : function(options) {
             this.options = options || {};
             this.model = new FormData;
-            _.bindAll(this, 'renderForm', 'switchCardNumberField', 'validateForm', 'validateCourses', 'submitForm', 'renderResult', 'showForm');
+            _.bindAll(this, 'renderForm', 'switchCardNumberField', 'submitForm', 'renderResult', 'showForm');
         },
 
         renderForm : function() {
@@ -178,80 +266,26 @@ $(function() {
             }
         },
 
-        validateForm : function() {
-            var foundEmptyField = false;
-            $('input[required="required"]', this.el).each(function(index, element) {
-                if(!foundEmptyField && !$(element).val())
-                {
-                    var label = $('label[for="' + element.id + '"]');
-                    alert('You have to fill ' + (label && label[0] ? label[0].innerText : 'all required fields'));
-                    element.focus();
-                    foundEmptyField = true;
-                }
-            });
-
-            if(foundEmptyField)
-            {
-                return false;
-            }
-
-            if(!this.validateCourses())
-            {
-                return false;
-            }
-
-            // ...
-
-            console.info('ok');
-            return false;
-        },
-
-        validateCourses : function() {
-            var coursesDays = $('tr.courses-day');
-            for(var i = 0; i < coursesDays.length; i++)
-            {
-                var priorities = [];
-
-                var coursesFields = $('input', coursesDays[i]);
-                for(var j = 0; j < coursesFields.length; j++)
-                {
-                    priorities.push(coursesFields[j].value);
-                }
-
-                var allEmpty = true;
-                var allFilled = true;
-                var allDistinct = true;
-
-                for(var k = 0; k < priorities.length; k++)
-                {
-                    if(priorities[k] == 0)
-                    {
-                        allFilled = false;
-                    }
-                    else
-                    {
-                        allEmpty = false;
-
-                        if(priorities.indexOf(priorities[k]) != k)
-                        {
-                            allDistinct = false;
-                        }
-                    }
-
-                    if(!allEmpty && (!allFilled || !allDistinct))
-                    {
-                        console.info('invalid courses', i, k);
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        },
-
         submitForm : function() {
-            if(!this.validateForm())
+            try
             {
+                this.model.save($('#conferenceForm').serializeJSON(), {validation: true});
+            }
+            catch(e)
+            {
+                var field = $('input#f_' + e.field);
+                if(field && field[0])
+                {
+                    field[0].focus();
+
+                    var label = $('label[for="' + field[0].id + '"]');
+                    if(label && label[0])
+                    {
+                        e.field = label[0].innerText;
+                    }
+                }
+
+                alert(e.toString());
                 return false;
             }
 

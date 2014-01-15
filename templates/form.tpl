@@ -51,7 +51,7 @@
                 <% } %>
             </tr>
             <% for(var i = 0; i < daysCount; i++) { %>
-                <tr class="courses-day" courses-day="<%- i %>">
+                <tr class="courses-day">
                     <th>day #<%- i + 1 %></th>
                     <% for(var j = 0; j < coursesCount; j++) { %>
                         <td>
