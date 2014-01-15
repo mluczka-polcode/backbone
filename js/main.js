@@ -28,15 +28,15 @@ $(function() {
     var PersonView = Backbone.View.extend({
         tagName : 'fieldset',
 
-        template : _.template($('#personTemplate').html()),
-
         events : {
             'click .removePerson' : 'remove',
             'change input' : 'update'
         },
 
-        initialize : function() {
-            _.bindAll(this, 'remove', 'render', 'unrender');
+        initialize : function(options) {
+            this.template = options.template;
+
+            _.bindAll(this, 'update', 'remove', 'render', 'unrender');
 
             this.model.bind('change', this.render);
             this.model.bind('remove', this.unrender);
@@ -76,7 +76,9 @@ $(function() {
             'click #addPerson' : 'addPerson',
         },
 
-        initialize : function() {
+        initialize : function(options) {
+            this.options = options || {};
+
             _.bindAll(this, 'addPerson', 'render', 'append');
 
             this.collection = new PersonList();
@@ -111,7 +113,8 @@ $(function() {
 
         append : function(item) {
             var itemView = new PersonView({
-                model: item
+                model : item,
+                template : _.template(this.options.personTemplate)
             });
 
             $('#additionalPersons').append(itemView.render().el);
@@ -205,12 +208,6 @@ $(function() {
         }
     });
 
-    var listView = new PersonListView({
-        el : 'body'
-    });
-
-    var formView, router;
-
     var Router = Backbone.Router.extend({
         routes : {
             '' : "showForm",
@@ -227,6 +224,8 @@ $(function() {
         }
     });
 
+    var formView, listView, router;
+
     requirejs.config({
         baseUrl: 'js',
         paths: {
@@ -234,15 +233,23 @@ $(function() {
         }
     });
 
-    require(['text!templates/form.html', 'text!templates/result.html'], function(formTemplate, resultTemplate) {
-        formView = new FormView({
-            el : '#mainContainer',
-            formTemplate : formTemplate,
-            resultTemplate : resultTemplate
-        });
+    require(
+        ['text!templates/form.tpl', 'text!templates/result.tpl', 'text!templates/person.tpl'],
+        function(formTemplate, resultTemplate, personTemplate) {
+            listView = new PersonListView({
+                el : 'body',
+                personTemplate : personTemplate
+            });
 
-        router = new Router;
-        Backbone.history.start();
-    })();
+            formView = new FormView({
+                el : '#mainContainer',
+                formTemplate : formTemplate,
+                resultTemplate : resultTemplate
+            });
+
+            router = new Router;
+            Backbone.history.start();
+        }
+    )();
 
 });
