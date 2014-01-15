@@ -171,7 +171,7 @@ $(function() {
             {
                 for(var j = 0; j < requiredFields.length; j++)
                 {
-                    if(!persons[requiredFields[i]])
+                    if(!persons[i][requiredFields[j]])
                     {
                         throw new FormDataException('person_' + i + '_' + requiredFields[i], 'field cannot be empty');
                     }
@@ -221,6 +221,24 @@ $(function() {
 
             return true;
         },
+
+        calculatePrice : function() {
+            var price = 0;
+
+            this.get('persons').forEach(function(person) {
+                if(person.age > 12)
+                {
+                    price += 200;
+                }
+            });
+
+            var resources = this.get('resources');
+            Object.keys(resources).forEach(function(key) {
+                price += 10 * resources[key];
+            });
+
+            return price;
+        }
     });
 
     var FormView = Backbone.View.extend({
@@ -310,7 +328,8 @@ $(function() {
         renderResult : function() {
             var template = _.template(this.options.resultTemplate);
             this.$el.html(template({
-                data : this.model.attributes
+                data : this.model.attributes,
+                price : this.model.calculatePrice()
             }));
         },
 

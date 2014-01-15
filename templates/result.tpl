@@ -69,5 +69,9 @@
         </div>
     <% } %>
 
+    <div>
+        <h3>Price: $<%- price %></h3>
+    </div>
+
     <button id="showForm">back to form view</button>
 </div>
