@@ -18,7 +18,7 @@
         <label for="f_occupations">I am </label>
         <select id="f_occupations" name="occupations[]" multiple="multiple" size="3">
             <% for(var i = 0; i < occupations.length; i++) { %>
-                <option value="<%- occupations[i] %>"<%= data.occupations.indexOf(occupations[i]) > -1 ? ' selected="selected"' : '' %>><%- occupations[i] %></option>
+                <option value="<%- occupations[i] %>"<%= data.occupations && data.occupations.indexOf(occupations[i]) > -1 ? ' selected="selected"' : '' %>><%- occupations[i] %></option>
             <% } %>
         </select>
         <br />
@@ -55,7 +55,7 @@
                     <th>day #<%- i + 1 %></th>
                     <% for(var j = 0; j < coursesCount; j++) { %>
                         <td>
-                            <% var value = data.courses && data.courses[i] ? data.courses[i][j] : ''; %>
+                            <% var value = data.courses && data.courses[i] ? data.courses[i][j] : 0; %>
                             <input type="number" id="f_course_<%= i %>_<%= j %>" name="courses[<%= i %>][<%= j %>]" value="<%- value %>" min="0" max="<%- coursesCount %>" placeholder="1-<%- coursesCount%>" />
                         </td>
                     <% } %>
@@ -68,7 +68,7 @@
         <legend>Additional resources</legend>
 
         <% resources.forEach(function(res) { %>
-            <input type="number" id="f_ar_<%= res %>" name="resources[<%= res %>]" value="<%- data.resources ? data.resources[res] : '' %>" min="0" placeholder="0" />
+            <input type="number" id="f_ar_<%= res %>" name="resources[<%= res %>]" value="<%- data.resources ? data.resources[res] : 0 %>" min="0" placeholder="0" />
             <label for="f_ar_<%= res %>"><%= res %>(s)</label>
             <br />
         <% }); %>

@@ -24,6 +24,7 @@ endif;
 ?>
 <?php
 if (file_exists(WWW_ROOT . 'css' . DS . 'cake.generic.css')):
+/* don't show this misleading message
 ?>
 <p id="url-rewriting-warning" style="background-color:#e32; color:#fff;">
 	<?php echo __d('cake_dev', 'URL rewriting is not properly configured on your server.'); ?>
@@ -31,6 +32,7 @@ if (file_exists(WWW_ROOT . 'css' . DS . 'cake.generic.css')):
 	2) <a target="_blank" href="http://book.cakephp.org/2.0/en/development/configuration.html#cakephp-core-configuration" style="color:#fff;">I don't / can't use URL rewriting</a>
 </p>
 <?php
+*/
 endif;
 ?>
 <p>
