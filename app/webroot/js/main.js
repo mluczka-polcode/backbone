@@ -30,7 +30,10 @@ var Form = Backbone.Model.extend({
 
     validate : function() {
         var data = this.attributes.data;
+        return(this.checkRequiredFields(data) && this.validatePersons(data.persons) && this.validateCourses(data.courses));
+    },
 
+    checkRequiredFields : function(data) {
         var requiredFields = ['firstName', 'lastName', 'phone'];
         if(data.hasCard)
         {
@@ -42,12 +45,8 @@ var Form = Backbone.Model.extend({
             if(!data[requiredFields[i]])
             {
                 throw new FormDataException(requiredFields[i], 'field cannot be empty');
+                return false;
             }
-        }
-
-        if(!this.validatePersons(data.persons) || !this.validateCourses(data.courses))
-        {
-            return false;
         }
 
         return true;
@@ -172,6 +171,9 @@ var FormListView = Backbone.View.extend({
         _.each(this.model.models, function (form) {
             $(this.el).append(new FormListItemView({model:form}).render().el);
         }, this);
+
+        $(this.el).append('<br /><a href="#/form/add">sign up to conference</a>');
+
         return this;
     }
 });
@@ -196,10 +198,6 @@ var FormView = Backbone.View.extend({
     MAX_PERSONS_COUNT : 15,
 
     events : {
-//         'change input'  : 'change',
-//         'click .save'   : 'saveForm',
-//         'click .delete' : 'deleteForm'
-
         'change #f_hasCard' : 'switchCardNumberField',
         'click #addPerson' : 'addPerson',
         'submit' : 'saveForm',
@@ -209,9 +207,7 @@ var FormView = Backbone.View.extend({
     initialize : function () {
         this.template = _.template(templates.formTemplate);
 
-        _.bindAll(this, 'render', 'renderPersons', 'renderResult', 'switchCardNumberField', 'addPerson', 'change', 'saveForm', 'deleteForm');
-
-//         this.model.bind('change', this.render, this);
+        _.bindAll(this, 'render', 'renderPersons', 'renderResult', 'switchCardNumberField', 'addPerson', 'change', 'saveForm', 'validateForm', 'deleteForm');
 
         this.personCollection = new PersonCollection();
 
@@ -222,17 +218,14 @@ var FormView = Backbone.View.extend({
 
             _(persons).each(function(item) {
                 item.id = self.personCounter;
-                var person = new Person();
-                person.set(item);
-                self.personCollection.add(person);
+                self.personCollection.add(new Person(item));
                 self.personCounter += 1;
             });
         }
-
     },
 
     render : function (eventName) {
-        this.$el.html(this.template({
+        $(this.el).html(this.template({
             occupations : ['developer', 'entrepreneur', 'student'],
             daysCount : 3,
             coursesCount : 3,
@@ -261,7 +254,7 @@ var FormView = Backbone.View.extend({
     },
 
     renderResult : function() {
-        this.$el.html(_.template(templates.resultTemplate, {
+        $(this.el).html(_.template(templates.resultTemplate, {
             id : this.model.id,
             data : this.model.attributes.data,
             price : this.model.calculatePrice()
@@ -284,11 +277,9 @@ var FormView = Backbone.View.extend({
     },
 
     addPerson : function() {
-        var person = new Person();
-        person.set({
+        this.personCollection.add(new Person({
             id: this.personCounter
-        });
-        this.personCollection.add(person);
+        }));
 
         this.personCounter += 1;
 
@@ -308,8 +299,49 @@ var FormView = Backbone.View.extend({
     },
 
     saveForm : function () {
-        var self = this;
+// console.info(this.model.id);
+// return false;
+        if(!this.validateForm())
+        {
+            return false;
+        }
 
+        var self = this;
+//         if (this.model.isNew())
+//         {
+//             console.info('new');
+//             app.formList.create(this.model, {
+//                 success : function () {
+//                     app.navigate('forms/view/' + self.model.id, false);
+//                 }
+//             });
+//         }
+//         else
+//         {
+            console.info('updated');
+            Backbone.ajax({
+                dataType : 'json',
+                url : 'http://conference.local/cforms/api',
+                method : 'post',
+                data : {
+                    id : this.model.id,
+                    data : JSON.stringify(this.model.attributes.data)
+                },
+                success : function(val) {
+                    console.info('success');
+                    self.model.id = val.id;
+                    app.navigate('form/view/' + self.model.id, {trigger: true});
+                },
+                error : function (xhr, ajaxOptions, thrownError) {
+                    alert('Error code ' + xhr.status + '\n' + thrownError);
+                }
+            });
+//         }
+
+        return false;
+    },
+
+    validateForm : function() {
         try
         {
             this.model.set({
@@ -335,38 +367,7 @@ var FormView = Backbone.View.extend({
             return false;
         }
 
-        if (this.model.isNew())
-        {
-            console.info('new');
-            app.formList.create(this.model, {
-                success : function () {
-                    app.navigate('forms/' + self.model.id, false);
-                }
-            });
-        }
-        else
-        {
-            console.info('updated');
-            Backbone.ajax({
-                dataType : 'json',
-                url : 'http://conference.local/cforms/api',
-                method : 'post',
-                data : {
-                    id : this.model.id,
-                    data : JSON.stringify(this.model.attributes.data)
-                },
-                success : function(val) {
-                    console.info('success');
-//                     self.model.set(val);
-                    app.navigate('form/view/' + self.model.id, {trigger: true});
-                },
-                error : function (xhr, ajaxOptions, thrownError) {
-                    alert('Error code ' + xhr.status + '\n' + thrownError);
-                }
-            });
-        }
-
-        return false;
+        return true;
     },
 
     deleteForm : function () {
@@ -464,7 +465,7 @@ var AppRouter = Backbone.Router.extend({
 
 	addForm : function() {
         var form = new Form();
-        $('#forms-content').html(new FormView({model : form}).el);
+        $('#forms-content').html(new FormView({model : form}).render().el);
     }
 });
 

@@ -50,95 +50,84 @@ class CFormsController extends AppController {
     {
         $this->autoRender = false;
 
-//         if(!$this->request->is('ajax'))
-//         {
-//             die('AJAX only!');
-//         }
-
-//         if($_SERVER['REQUEST_METHOD'] == 'PUT')
-//         {
-//             $data = '';
-//             $putdata = fopen('php://input', 'r');
-//             while($string = fread($putdata, 1024))
-//             {
-//                 $data .= $string;
-//             }
-//         }
-
-        if ($this->request->is('post'))
+        if($this->request->is('post'))
         {
-            // hack ;-)
-            $this->request->data['data'] = $this->request->data[0];
-
-//             echo '<pre>'.print_r($this->request->data, true).'</pre>';
-            if ($this->CForm->save($this->request->data))
-            {
-                echo '{}';
-            }
-            else
-            {
-                debug($this->Recipe->validationErrors);
-                echo '{"error":"..."}';
-            }
+            echo $this->saveForm();
+            return;
+        }
+        elseif($this->request->is('delete'))
+        {
+            echo $this->deleteForm($id);
             return;
         }
 
-        if($id)
-        {
-            $out = $this->CForm->find('first', array('id' => $id));
-            $out = $out['CForm'];
-            $out['data'] = json_decode($out['data']);
-        }
-        else
-        {
-            $out = array();
-            $forms = $this->CForm->find('all');
-            foreach($forms as $form)
-            {
-                $data = json_decode($form['CForm']['data']);
-                $out[] = array(
-                    'id' => $form['CForm']['id'],
-                    'name' => $data->firstName . ' ' . $data->lastName,
-                    'data' => $data,
-                );
-            }
-        }
+        $out = $id ? $this->getForm($id) : $this->getAllForms();
 
         header('Content-Type: application/json; charset=utf8');
         echo json_encode($out);
     }
 
-//     public $components = array('RequestHandler');
-//
-//     public function index() {
-//         $cforms = $this->CForm->find('all');
-//         $this->set(array(
-//             'cforms' => $cforms,
-//             '_serialize' => array('cforms')
-//         ));
-//     }
-//
-//     public function view($id) {
-//         $cform = $this->CForm->findById($id);
-//         $this->set(array(
-//             'cform' => $cform,
-//             '_serialize' => array('cform')
-//         ));
-//     }
-//
-//     public function edit($id) {
-//         $this->CForm->id = $id;
-//         if ($this->CForm->save($this->request->data)) {
-//             $message = 'Saved';
-//         } else {
-//             $message = 'Error';
-//         }
-//         $this->set(array(
-//             'message' => $message,
-//             '_serialize' => array('message')
-//         ));
-//     }
-//
+    private function getForm($id)
+    {
+        $out = $this->CForm->findById($id);
+        $out = $out['CForm'];
+        $out['data'] = json_decode($out['data']);
+        return $out;
+    }
+
+    private function getAllForms()
+    {
+        $out = array();
+
+        $forms = $this->CForm->find('all');
+        foreach($forms as $form)
+        {
+            $data = json_decode($form['CForm']['data']);
+            $out[] = array(
+                'id' => $form['CForm']['id'],
+                'name' => $data->firstName . ' ' . $data->lastName,
+                'data' => $data,
+            );
+        }
+
+        return $out;
+    }
+
+    private function saveForm()
+    {
+        // hack ;-P
+        $this->request->data['data'] = $this->request->data[0];
+
+        if($this->CForm->save($this->request->data))
+        {
+            return json_encode(array(
+                'id' => $this->CForm->id,
+            ));
+        }
+
+        return json_encode(array(
+            'error' => $this->CForm->validationErrors,
+        ));
+    }
+
+    private function deleteForm($id)
+    {
+        if($this->CForm->delete($id))
+        {
+            $out = array(
+                'deleted' => 1,
+            );
+        }
+        else
+        {
+            $out = array(
+                'error' => 1,
+            );
+        }
+
+        return json_encode($out);
+    }
+
 //     public function delete($id) {
 //         if ($this->CForm->delete($id)) {
 //             $message = 'Deleted';
