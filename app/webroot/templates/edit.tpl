@@ -79,3 +79,18 @@
         <a href="#">back to list</a>
     </fieldset>
 </form>
+
+<script type="text/javascript">
+    $('#f_hasCard').click(function() {
+        if($('#f_hasCard').prop('checked'))
+        {
+            $('#cardNumber').show();
+            $('#f_cardNumber').attr('required', 'required');
+        }
+        else
+        {
+            $('#cardNumber').hide();
+            $('#f_cardNumber').removeAttr('required');
+        }
+    });
+</script>
