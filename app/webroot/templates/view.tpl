@@ -5,10 +5,10 @@
             <dt>First name</dt><dd><%- data.firstName %></dd>
             <dt>Last name</dt><dd><%- data.lastName %></dd>
             <dt>Phone number</dt><dd><%- data.phone %></dd>
-            <% if(data.occupations) { %>
+            <% if(data.occupations && data.occupations.length) { %>
                 <dt>Occupation</dt><dd><%- data.occupations.join(', ') %></dd>
             <% } %>
-            <% if(data.hasCard) { %>
+            <% if(data.cardNumber) { %>
                 <dt>Card number</dt><dd><%- data.cardNumber %></dd>
             <% } %>
         </dl>
@@ -74,4 +74,6 @@
     </div>
 
     <a href="#/form/edit/<%- id %>">edit form</a>
+    |
+    <a href="#">back to list</a>
 </div>

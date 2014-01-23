@@ -33,7 +33,7 @@ class CFormsController extends AppController {
 
     private function getForm($id)
     {
-        return $this->getFormArray($this->CForm->findById($id));
+        return $this->decodeForm($this->CForm->findById($id));
     }
 
     private function getAllForms()
@@ -43,18 +43,19 @@ class CFormsController extends AppController {
         $forms = $this->CForm->find('all');
         foreach($forms as $form)
         {
-            $out[] = $this->getFormArray($form);
+            $out[] = $this->decodeForm($form);
         }
 
         return $out;
     }
 
-    private function getFormArray($data)
+    private function decodeForm($data)
     {
         $data = $data['CForm'];
-        $data['persons'] = json_decode($data['persons']);
-        $data['courses'] = json_decode($data['courses']);
-        $data['resources'] = json_decode($data['resources']);
+        $data['occupations'] = json_decode($data['occupations']);
+        $data['persons']     = json_decode($data['persons']);
+        $data['courses']     = json_decode($data['courses']);
+        $data['resources']   = json_decode($data['resources']);
         return $data;
     }
 

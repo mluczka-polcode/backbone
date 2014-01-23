@@ -18,7 +18,7 @@ var Form = Backbone.Model.extend({
         lastName    : '',
         phone       : '',
         occupations : [],
-        hasCard     : 0,
+        hasCard     : false,
         cardNumber  : '',
         persons     : [],
         courses     : [],
@@ -175,7 +175,6 @@ var FormView = Backbone.View.extend({
         'change #f_hasCard' : 'switchCardNumberField',
         'click #addPerson' : 'addPerson',
         'submit' : 'saveForm',
-        'click .submit' : 'saveForm'
     },
 
     initialize : function () {
@@ -228,7 +227,7 @@ var FormView = Backbone.View.extend({
     },
 
     renderDetails : function() {
-        $(this.el).html(_.template(templates.resultTemplate, {
+        $(this.el).html(_.template(templates.detailsTemplate, {
             id : this.model.id,
             data : this.model.attributes,
             price : this.model.calculatePrice()
@@ -242,11 +241,13 @@ var FormView = Backbone.View.extend({
         {
             $('#cardNumber').show();
             $('#f_cardNumber').attr('required', 'required');
+            this.model.hasCard = true;
         }
         else
         {
             $('#cardNumber').hide();
             $('#f_cardNumber').removeAttr('required');
+            this.model.hasCard = false;
         }
     },
 
@@ -284,14 +285,15 @@ var FormView = Backbone.View.extend({
             url : 'http://conference.local/cforms/api',
             method : 'post',
             data : {
-                id         : this.model.attributes.id,
-                firstName  : this.model.attributes.firstName,
-                lastName   : this.model.attributes.lastName,
-                phone      : this.model.attributes.phone,
-                cardNumber : this.model.attributes.cardNumber,
-                persons    : JSON.stringify(this.model.attributes.persons),
-                courses    : JSON.stringify(this.model.attributes.courses),
-                resources  : JSON.stringify(this.model.attributes.resources)
+                id          : this.model.attributes.id,
+                firstName   : this.model.attributes.firstName,
+                lastName    : this.model.attributes.lastName,
+                phone       : this.model.attributes.phone,
+                cardNumber  : this.model.attributes.cardNumber,
+                occupations : JSON.stringify(this.model.attributes.occupations),
+                persons     : JSON.stringify(this.model.attributes.persons),
+                courses     : JSON.stringify(this.model.attributes.courses),
+                resources   : JSON.stringify(this.model.attributes.resources)
             },
             success : function(val) {
                 console.info('success');
@@ -310,15 +312,16 @@ var FormView = Backbone.View.extend({
         try
         {
             var formData = $('#conferenceForm').serializeJSON();
-            this.model.set({
-                firstName  : $('#f_firstName').val(),
-                lastName   : $('#f_lastName').val(),
-                phone      : $('#f_phone').val(),
-                cardNumber : $('#f_cardNumber').val(),
-                persons    : formData.persons,
-                courses    : formData.courses,
-                resources  : formData.resources,
-            });
+            formData.cardNumber = $('#f_hasCard').prop('checked') ? $('#f_cardNumber').val() : '';
+            var multiFields = ['occupations', 'persons', 'courses', 'resources'];
+            for(var i = 0; i < multiFields.length; i++)
+            {
+                if(!formData[multiFields[i]])
+                {
+                    formData[multiFields[i]] = [];
+                }
+            }
+            this.model.set(formData);
             this.model.validate();
         }
         catch(e)
@@ -443,6 +446,7 @@ var AppRouter = Backbone.Router.extend({
 });
 
 var app = new AppRouter;
+
 var templates = {};
 
 requirejs.config({
@@ -455,13 +459,14 @@ requirejs.config({
 
 require(
     ['text!templates/list.tpl', 'text!templates/edit.tpl', 'text!templates/view.tpl', 'text!templates/person.tpl'],
-    function(listTemplate, formTemplate, resultTemplate, personTemplate) {
+    function(listTemplate, formTemplate, detailsTemplate, personTemplate) {
         templates = {
             listTemplate : listTemplate,
             formTemplate : formTemplate,
-            resultTemplate : resultTemplate,
+            detailsTemplate : detailsTemplate,
             personTemplate : personTemplate
         };
+
         Backbone.history.start();
     }
 )();

@@ -4,6 +4,7 @@ CREATE TABLE `c_forms` (
     `lastName` VARCHAR(32) NOT NULL,
     `phone` VARCHAR(32) NOT NULL,
     `cardNumber` VARCHAR(32) NOT NULL,
+    `occupations` TEXT NOT NULL,
     `persons` TEXT NOT NULL,
     `courses` TEXT NOT NULL,
     `resources` TEXT NOT NULL,

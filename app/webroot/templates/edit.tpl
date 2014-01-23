@@ -23,12 +23,12 @@
         </select>
         <br />
 
-        <input type="checkbox" id="f_hasCard" name="hasCard" value="1" <%= data.hasCard ? 'checked="checked"' : '' %> />
+        <input type="checkbox" id="f_hasCard" name="hasCard" value="1" <%= data.cardNumber ? 'checked="checked"' : '' %> />
         <label for="f_hasCard">I have habitual client card</label>
 
-        <div id="cardNumber" <%= data.hasCard ? '' : 'style="display:none;"' %>>
+        <div id="cardNumber" <%= data.cardNumber ? '' : 'style="display:none;"' %>>
             <label for="f_cardNumber">Card number</label>
-            <input type="text" id="f_cardNumber" name="cardNumber" value="<%- data.hasCard ? data.cardNumber : '' %>" placeholder="Card number" />
+            <input type="text" id="f_cardNumber" name="cardNumber" value="<%- data.cardNumber %>" placeholder="Card number" />
         </div>
     </fieldset>
 
@@ -76,6 +76,6 @@
 
     <fieldset class="submit">
         <input type="submit" id="f_submit" value="register" />
-        <span class="submit">submit</span>
+        <a href="#">back to list</a>
     </fieldset>
 </form>
