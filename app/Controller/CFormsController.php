@@ -8,15 +8,6 @@ class CFormsController extends AppController {
 
     public function index()
     {
-        $formsSimple = array();
-        $forms = $this->CForm->find('all');
-        foreach($forms as $form)
-        {
-            $data = json_decode($form['CForm']['data']);
-            $formsSimple[$form['CForm']['id']] = $data->firstName . ' ' . $data->lastName;
-        }
-
-        $this->set('forms', $formsSimple);
     }
 
     public function api($id = 0)
@@ -42,10 +33,7 @@ class CFormsController extends AppController {
 
     private function getForm($id)
     {
-        $out = $this->CForm->findById($id);
-        $out = $out['CForm'];
-        $out['data'] = json_decode($out['data']);
-        return $out;
+        return $this->getFormArray($this->CForm->findById($id));
     }
 
     private function getAllForms()
@@ -55,20 +43,23 @@ class CFormsController extends AppController {
         $forms = $this->CForm->find('all');
         foreach($forms as $form)
         {
-            $out[] = array(
-                'id' => $form['CForm']['id'],
-                'data' => json_decode($form['CForm']['data']),
-            );
+            $out[] = $this->getFormArray($form);
         }
 
         return $out;
     }
 
+    private function getFormArray($data)
+    {
+        $data = $data['CForm'];
+        $data['persons'] = json_decode($data['persons']);
+        $data['courses'] = json_decode($data['courses']);
+        $data['resources'] = json_decode($data['resources']);
+        return $data;
+    }
+
     private function saveForm()
     {
-        // hack ;-P
-        $this->request->data['data'] = $this->request->data[0];
-
         if($this->CForm->save($this->request->data))
         {
             return array(

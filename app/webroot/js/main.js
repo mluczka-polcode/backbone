@@ -14,34 +14,31 @@ var Form = Backbone.Model.extend({
 
     defaults : {
         id : null,
-        data : {
-            firstName   : '',
-            lastName    : '',
-            phone       : '',
-            occupations : [],
-            hasCard     : 0,
-            cardNumber  : '',
-            persons     : [],
-            courses     : [],
-            resources   : []
-        },
+        firstName   : '',
+        lastName    : '',
+        phone       : '',
+        occupations : [],
+        hasCard     : 0,
+        cardNumber  : '',
+        persons     : [],
+        courses     : [],
+        resources   : []
     },
 
     validate : function() {
-        var data = this.attributes.data;
-        return(this.checkRequiredFields(data) && this.validatePersons(data.persons) && this.validateCourses(data.courses));
+        return(this.checkRequiredFields() && this.validatePersons() && this.validateCourses());
     },
 
-    checkRequiredFields : function(data) {
+    checkRequiredFields : function() {
         var requiredFields = ['firstName', 'lastName', 'phone'];
-        if(data.hasCard)
+        if(this.attributes.hasCard)
         {
             requiredFields.push('cardNumber');
         }
 
         for(var i = 0; i < requiredFields.length; i++)
         {
-            if(!data[requiredFields[i]])
+            if(!this.attributes[requiredFields[i]])
             {
                 throw new FormDataException(requiredFields[i], 'field cannot be empty');
                 return false;
@@ -51,7 +48,8 @@ var Form = Backbone.Model.extend({
         return true;
     },
 
-    validatePersons : function(persons) {
+    validatePersons : function() {
+        var persons = this.attributes.persons;
         if(!persons || !persons.length)
         {
             return true;
@@ -72,7 +70,9 @@ var Form = Backbone.Model.extend({
         return true;
     },
 
-    validateCourses : function(courses) {
+    validateCourses : function() {
+        var courses = this.attributes.courses;
+
         for(var i = 0; i < courses.length; i++)
         {
             var allEmpty = true;
@@ -116,14 +116,14 @@ var Form = Backbone.Model.extend({
     calculatePrice : function() {
         var price = 0;
 
-        this.get('data').persons.forEach(function(person) {
+        this.get('persons').forEach(function(person) {
             if(person.age > 12)
             {
                 price += 200;
             }
         });
 
-        var resources = this.get('data').resources;
+        var resources = this.get('resources');
         Object.keys(resources).forEach(function(key) {
             price += 10 * resources[key];
         });
@@ -185,7 +185,7 @@ var FormView = Backbone.View.extend({
 
         this.personCollection = new PersonCollection();
 
-        var persons = this.model.attributes.data.persons;
+        var persons = this.model.attributes.persons;
         if(persons)
         {
             var self = this;
@@ -204,7 +204,7 @@ var FormView = Backbone.View.extend({
             daysCount : 3,
             coursesCount : 3,
             resources : ['drawer', 'calculator', 'computer', 'projector', 'gadget'],
-            data : this.model.attributes.data
+            data : this.model.attributes
         }));
 
         _.defer(function(view) {
@@ -230,7 +230,7 @@ var FormView = Backbone.View.extend({
     renderDetails : function() {
         $(this.el).html(_.template(templates.resultTemplate, {
             id : this.model.id,
-            data : this.model.attributes.data,
+            data : this.model.attributes,
             price : this.model.calculatePrice()
         }));
 
@@ -284,8 +284,14 @@ var FormView = Backbone.View.extend({
             url : 'http://conference.local/cforms/api',
             method : 'post',
             data : {
-                id : this.model.id,
-                data : JSON.stringify(this.model.attributes.data)
+                id         : this.model.attributes.id,
+                firstName  : this.model.attributes.firstName,
+                lastName   : this.model.attributes.lastName,
+                phone      : this.model.attributes.phone,
+                cardNumber : this.model.attributes.cardNumber,
+                persons    : JSON.stringify(this.model.attributes.persons),
+                courses    : JSON.stringify(this.model.attributes.courses),
+                resources  : JSON.stringify(this.model.attributes.resources)
             },
             success : function(val) {
                 console.info('success');
@@ -303,8 +309,15 @@ var FormView = Backbone.View.extend({
     validateForm : function() {
         try
         {
+            var formData = $('#conferenceForm').serializeJSON();
             this.model.set({
-                data : $('#conferenceForm').serializeJSON(),
+                firstName  : $('#f_firstName').val(),
+                lastName   : $('#f_lastName').val(),
+                phone      : $('#f_phone').val(),
+                cardNumber : $('#f_cardNumber').val(),
+                persons    : formData.persons,
+                courses    : formData.courses,
+                resources  : formData.resources,
             });
             this.model.validate();
         }
