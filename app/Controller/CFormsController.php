@@ -19,49 +19,22 @@ class CFormsController extends AppController {
         $this->set('forms', $formsSimple);
     }
 
-    public function view($id = null)
-    {
-        if(!$id)
-        {
-            throw new NotFoundException(__('Invalid form'));
-        }
-
-        $form = $this->CForm->findById($id);
-        if(!$form)
-        {
-            throw new NotFoundException(__('Invalid form'));
-        }
-
-        $this->set('form', $form);
-    }
-
-    public function edit($id = null)
-    {
-        if($this->request->is('post') && $this->CForm->save($this->request->data))
-        {
-            $this->Session->setFlash('Form has been saved.');
-            return $this->redirect('/');
-        }
-
-        $this->set('form', $this->CForm->findById($id));
-    }
-
     public function api($id = 0)
     {
         $this->autoRender = false;
 
         if($this->request->is('post'))
         {
-            echo $this->saveForm();
-            return;
+            $out = $this->saveForm();
         }
         elseif($this->request->is('delete'))
         {
-            echo $this->deleteForm($id);
-            return;
+            $out = $this->deleteForm($id);
         }
-
-        $out = $id ? $this->getForm($id) : $this->getAllForms();
+        else
+        {
+            $out = $id ? $this->getForm($id) : $this->getAllForms();
+        }
 
         header('Content-Type: application/json; charset=utf8');
         echo json_encode($out);
@@ -100,43 +73,30 @@ class CFormsController extends AppController {
 
         if($this->CForm->save($this->request->data))
         {
-            return json_encode(array(
+            return array(
                 'id' => $this->CForm->id,
-            ));
+            );
         }
 
-        return json_encode(array(
+        return array(
             'error' => $this->CForm->validationErrors,
-        ));
+        );
     }
 
     private function deleteForm($id)
     {
+        $result = array();
+
         if($this->CForm->delete($id))
         {
-            $out = array(
-                'deleted' => 1,
-            );
+            $result['deleted'] = 1;
         }
         else
         {
-            $out = array(
-                'error' => 1,
-            );
+            $result['error'] = 1;
         }
 
-        return json_encode($out);
+        return $result;
     }
 
-//     public function delete($id) {
-//         if ($this->CForm->delete($id)) {
-//             $message = 'Deleted';
-//         } else {
-//             $message = 'Error';
-//         }
-//         $this->set(array(
-//             'message' => $message,
-//             '_serialize' => array('message')
-//         ));
-//     }
 }

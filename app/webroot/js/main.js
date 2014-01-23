@@ -182,7 +182,7 @@ var FormListItemView = Backbone.View.extend({
     tagName : 'li',
 
     initialize : function () {
-        this.template = _.template('<a href="#form/edit/<%= id %>"><%= name %></a>');
+        this.template = _.template('<%= name %> <a href="#form/view/<%= id %>">[view]</a> <a href="#form/edit/<%= id %>">[edit]</a> <a href="#form/delete/<%= id %>">[delete]</a>');
         this.model.bind('change', this.render, this);
         this.model.bind('destroy', this.close, this);
     },
@@ -207,7 +207,7 @@ var FormView = Backbone.View.extend({
     initialize : function () {
         this.template = _.template(templates.formTemplate);
 
-        _.bindAll(this, 'render', 'renderPersons', 'renderResult', 'switchCardNumberField', 'addPerson', 'change', 'saveForm', 'validateForm', 'deleteForm');
+        _.bindAll(this, 'render', 'renderPersons', 'renderResult', 'switchCardNumberField', 'addPerson', 'change', 'saveForm', 'validateForm');
 
         this.personCollection = new PersonCollection();
 
@@ -299,44 +299,29 @@ var FormView = Backbone.View.extend({
     },
 
     saveForm : function () {
-// console.info(this.model.id);
-// return false;
         if(!this.validateForm())
         {
             return false;
         }
 
         var self = this;
-//         if (this.model.isNew())
-//         {
-//             console.info('new');
-//             app.formList.create(this.model, {
-//                 success : function () {
-//                     app.navigate('forms/view/' + self.model.id, false);
-//                 }
-//             });
-//         }
-//         else
-//         {
-            console.info('updated');
-            Backbone.ajax({
-                dataType : 'json',
-                url : 'http://conference.local/cforms/api',
-                method : 'post',
-                data : {
-                    id : this.model.id,
-                    data : JSON.stringify(this.model.attributes.data)
-                },
-                success : function(val) {
-                    console.info('success');
-                    self.model.id = val.id;
-                    app.navigate('form/view/' + self.model.id, {trigger: true});
-                },
-                error : function (xhr, ajaxOptions, thrownError) {
-                    alert('Error code ' + xhr.status + '\n' + thrownError);
-                }
-            });
-//         }
+        Backbone.ajax({
+            dataType : 'json',
+            url : 'http://conference.local/cforms/api',
+            method : 'post',
+            data : {
+                id : this.model.id,
+                data : JSON.stringify(this.model.attributes.data)
+            },
+            success : function(val) {
+                console.info('success');
+                self.model.id = val.id;
+                app.navigate('form/view/' + self.model.id, {trigger: true});
+            },
+            error : function (xhr, ajaxOptions, thrownError) {
+                alert('Error code ' + xhr.status + '\n' + thrownError);
+            }
+        });
 
         return false;
     },
@@ -368,16 +353,6 @@ var FormView = Backbone.View.extend({
         }
 
         return true;
-    },
-
-    deleteForm : function () {
-        this.model.destroy({
-            success : function () {
-                alert('Form deleted successfully');
-                window.history.back();
-            }
-        });
-        return false;
     }
 });
 
@@ -429,10 +404,11 @@ var PersonView = Backbone.View.extend({
 
 var AppRouter = Backbone.Router.extend({
     routes : {
-        ''              : 'list',
-        'form/add'      : 'addForm',
-        'form/edit/:id' : 'formDetails',
-        'form/view/:id' : 'formResult'
+        ''                : 'list',
+        'form/add'        : 'addForm',
+        'form/edit/:id'   : 'editForm',
+        'form/view/:id'   : 'viewForm',
+        'form/delete/:id' : 'deleteForm'
     },
 
 	list : function(page) {
@@ -445,7 +421,7 @@ var AppRouter = Backbone.Router.extend({
         });
     },
 
-    formDetails : function (id) {
+    editForm : function (id) {
         var form = new Form({id: id});
         form.fetch({
             success: function() {
@@ -454,7 +430,7 @@ var AppRouter = Backbone.Router.extend({
         });
     },
 
-    formResult : function (id) {
+    viewForm : function (id) {
         var form = new Form({id: id});
         form.fetch({
             success: function() {
@@ -466,6 +442,16 @@ var AppRouter = Backbone.Router.extend({
 	addForm : function() {
         var form = new Form();
         $('#forms-content').html(new FormView({model : form}).render().el);
+    },
+
+    deleteForm : function(id) {
+        var form = new Form({id: id});
+        form.destroy({
+            success : function () {
+                alert('Form deleted successfully');
+                window.history.back();
+            }
+        });
     }
 });
 
