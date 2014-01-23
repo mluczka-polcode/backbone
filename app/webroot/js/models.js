@@ -1,4 +1,3 @@
-
 var FormDataException = function(field, message) {
     this.field = field;
     this.message = message;
@@ -11,7 +10,7 @@ var Form = Backbone.Model.extend({
     urlRoot : '/cforms/api',
 
     defaults : {
-        id : null,
+        id          : null,
         firstName   : '',
         lastName    : '',
         phone       : '',

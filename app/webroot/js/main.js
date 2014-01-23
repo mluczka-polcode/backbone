@@ -59,7 +59,8 @@ requirejs.config({
     baseUrl: '/js',
     urlArgs: 'ts=' + new Date().getTime(),
     paths: {
-        templates: '/templates'
+        text: 'external/text',
+        templates : '/templates'
     }
 });
 

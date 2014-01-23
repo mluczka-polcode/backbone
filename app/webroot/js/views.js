@@ -1,4 +1,3 @@
-
 var FormListView = Backbone.View.extend({
     initialize : function () {
         this.template = _.template(templates.listTemplate);
