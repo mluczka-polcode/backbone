@@ -55,11 +55,9 @@ class CFormsController extends AppController {
         $forms = $this->CForm->find('all');
         foreach($forms as $form)
         {
-            $data = json_decode($form['CForm']['data']);
             $out[] = array(
                 'id' => $form['CForm']['id'],
-                'name' => $data->firstName . ' ' . $data->lastName,
-                'data' => $data,
+                'data' => json_decode($form['CForm']['data']),
             );
         }
 

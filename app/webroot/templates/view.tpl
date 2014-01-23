@@ -73,5 +73,5 @@
         <h3>Price: $<%- price %></h3>
     </div>
 
-    <button id="showForm" form-id="<%- id %>">edit form</button>
+    <a href="#/form/edit/<%- id %>">edit form</a>
 </div>

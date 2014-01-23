@@ -28,7 +28,7 @@
 
         <div id="cardNumber" <%= data.hasCard ? '' : 'style="display:none;"' %>>
             <label for="f_cardNumber">Card number</label>
-            <input type="text" id="f_cardNumber" name="cardNumber" value="" placeholder="Card number" />
+            <input type="text" id="f_cardNumber" name="cardNumber" value="<%- data.hasCard ? data.cardNumber : '' %>" placeholder="Card number" />
         </div>
     </fieldset>
 
@@ -47,7 +47,7 @@
             <tr>
                 <th>&nbsp;</th>
                 <% for(var i = 0; i < coursesCount; i++) { %>
-                    <th>course #<%= i + 1 %></th>
+                    <th>course #<%- i + 1 %></th>
                 <% } %>
             </tr>
             <% for(var i = 0; i < daysCount; i++) { %>
@@ -56,7 +56,7 @@
                     <% for(var j = 0; j < coursesCount; j++) { %>
                         <td>
                             <% var value = data.courses && data.courses[i] ? data.courses[i][j] : 0; %>
-                            <input type="number" id="f_course_<%= i %>_<%= j %>" name="courses[<%= i %>][<%= j %>]" value="<%- value %>" min="0" max="<%- coursesCount %>" placeholder="1-<%- coursesCount%>" />
+                            <input type="number" id="f_course_<%- i %>_<%- j %>" name="courses[<%- i %>][<%- j %>]" value="<%- value %>" min="0" max="<%- coursesCount %>" placeholder="1-<%- coursesCount%>" />
                         </td>
                     <% } %>
                 </tr>
@@ -68,8 +68,8 @@
         <legend>Additional resources</legend>
 
         <% resources.forEach(function(res) { %>
-            <input type="number" id="f_ar_<%= res %>" name="resources[<%= res %>]" value="<%- data.resources ? data.resources[res] : 0 %>" min="0" placeholder="0" />
-            <label for="f_ar_<%= res %>"><%= res %>(s)</label>
+            <input type="number" id="f_ar_<%- res %>" name="resources[<%- res %>]" value="<%- data.resources ? data.resources[res] : 0 %>" min="0" placeholder="0" />
+            <label for="f_ar_<%- res %>"><%- res %>(s)</label>
             <br />
         <% }); %>
     </fieldset>

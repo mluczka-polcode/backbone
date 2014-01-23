@@ -14,7 +14,6 @@ var Form = Backbone.Model.extend({
 
     defaults : {
         id : null,
-        name : '',
         data : {
             firstName   : '',
             lastName    : '',
@@ -154,41 +153,16 @@ var PersonCollection = Backbone.Collection.extend({
 // views
 
 var FormListView = Backbone.View.extend({
-    tagName : 'ul',
-
     initialize : function () {
-        var self = this;
-
-        this.model.bind('reset', this.render, this);
-        this.model.bind('add', function (form) {
-            $(self.el).append(new FormListItemView({model:form}).render().el);
-        });
-
+        this.template = _.template(templates.listTemplate);
         this.render();
     },
 
     render : function (eventName) {
-        _.each(this.model.models, function (form) {
-            $(this.el).append(new FormListItemView({model:form}).render().el);
-        }, this);
+        $(this.el).html(this.template({
+            forms : this.model.models
+        }));
 
-        $(this.el).append('<br /><a href="#/form/add">sign up to conference</a>');
-
-        return this;
-    }
-});
-
-var FormListItemView = Backbone.View.extend({
-    tagName : 'li',
-
-    initialize : function () {
-        this.template = _.template('<%= name %> <a href="#form/view/<%= id %>">[view]</a> <a href="#form/edit/<%= id %>">[edit]</a> <a href="#form/delete/<%= id %>">[delete]</a>');
-        this.model.bind('change', this.render, this);
-        this.model.bind('destroy', this.close, this);
-    },
-
-    render : function (eventName) {
-        $(this.el).html(this.template(this.model.toJSON()));
         return this;
     }
 });
@@ -207,7 +181,7 @@ var FormView = Backbone.View.extend({
     initialize : function () {
         this.template = _.template(templates.formTemplate);
 
-        _.bindAll(this, 'render', 'renderPersons', 'renderResult', 'switchCardNumberField', 'addPerson', 'change', 'saveForm', 'validateForm');
+        _.bindAll(this, 'renderForm', 'renderPersons', 'renderDetails', 'switchCardNumberField', 'addPerson', 'change', 'saveForm', 'validateForm');
 
         this.personCollection = new PersonCollection();
 
@@ -224,7 +198,7 @@ var FormView = Backbone.View.extend({
         }
     },
 
-    render : function (eventName) {
+    renderForm : function (eventName) {
         $(this.el).html(this.template({
             occupations : ['developer', 'entrepreneur', 'student'],
             daysCount : 3,
@@ -241,7 +215,7 @@ var FormView = Backbone.View.extend({
     },
 
     renderPersons : function() {
-        $('#additionalPersons').html('');
+        $('#additionalPersons', this.el).html('');
 
         _(this.personCollection.models).each(function(person) {
             var view = new PersonView({
@@ -253,7 +227,7 @@ var FormView = Backbone.View.extend({
         }, this);
     },
 
-    renderResult : function() {
+    renderDetails : function() {
         $(this.el).html(_.template(templates.resultTemplate, {
             id : this.model.id,
             data : this.model.attributes.data,
@@ -425,7 +399,7 @@ var AppRouter = Backbone.Router.extend({
         var form = new Form({id: id});
         form.fetch({
             success: function() {
-                $('#forms-content').html(new FormView({model : form}).render().el);
+                $('#forms-content').html(new FormView({model : form}).renderForm().el);
             }
         });
     },
@@ -434,14 +408,14 @@ var AppRouter = Backbone.Router.extend({
         var form = new Form({id: id});
         form.fetch({
             success: function() {
-                $('#forms-content').html(new FormView({model : form}).renderResult().el);
+                $('#forms-content').html(new FormView({model : form}).renderDetails().el);
             }
         });
     },
 
 	addForm : function() {
         var form = new Form();
-        $('#forms-content').html(new FormView({model : form}).render().el);
+        $('#forms-content').html(new FormView({model : form}).renderForm().el);
     },
 
     deleteForm : function(id) {
@@ -467,7 +441,7 @@ requirejs.config({
 });
 
 require(
-    ['text!templates/list.tpl', 'text!templates/form.tpl', 'text!templates/result.tpl', 'text!templates/person.tpl'],
+    ['text!templates/list.tpl', 'text!templates/edit.tpl', 'text!templates/view.tpl', 'text!templates/person.tpl'],
     function(listTemplate, formTemplate, resultTemplate, personTemplate) {
         templates = {
             listTemplate : listTemplate,
