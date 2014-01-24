@@ -53,8 +53,6 @@ var FormView = Backbone.View.extend({
         'click #addOccupation' : 'addOccupation',
         'click #addResource' : 'addResource',
         'submit' : 'saveForm',
-
-        'click .test' : 'render',
     },
 
     el : $('#mainContainer'),

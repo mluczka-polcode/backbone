@@ -1,11 +1,3 @@
-var FormDataException = function(field, message) {
-    this.field = field;
-    this.message = message;
-    this.toString = function() {
-        return this.field + ': ' + this.message;
-    };
-};
-
 var Form = Backbone.Model.extend({
     defaults : {
         id : null,
