@@ -9,4 +9,16 @@ CREATE TABLE `c_forms` (
     `courses` TEXT NOT NULL,
     `resources` TEXT NOT NULL,
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `occupations` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(32) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `resources` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(32) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;

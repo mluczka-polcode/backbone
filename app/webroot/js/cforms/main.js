@@ -56,10 +56,10 @@ var app = new AppRouter;
 var templates = {};
 
 requirejs.config({
-    baseUrl: '/js',
-    urlArgs: 'ts=' + new Date().getTime(),
-    paths: {
-        text: 'external/text',
+    baseUrl : '/js',
+    urlArgs : 'ts=' + new Date().getTime(),
+    paths : {
+        text : 'external/text',
         templates : '/templates'
     }
 });

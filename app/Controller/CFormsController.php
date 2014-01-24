@@ -2,8 +2,8 @@
 
 App::uses('AppController', 'Controller');
 
-class CFormsController extends AppController {
-
+class CFormsController extends AppController
+{
     public $helpers = array('Html', 'Form');
 
     public function index()

@@ -34,7 +34,20 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
 		echo $this->fetch('script');
-	?>
+
+        $externalScripts = array(
+            'jquery-2.0.3.min',
+            'jquery.serializeJSON.min',
+            'underscore-min',
+            'backbone-min',
+            'require',
+        );
+
+        foreach($externalScripts as $script)
+        {
+            echo $this->Html->script('external/'.$script);
+        }
+    ?>
 </head>
 <body>
 	<div id="container">
