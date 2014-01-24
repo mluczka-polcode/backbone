@@ -1,3 +1,5 @@
+Backbone.emulateJSON = true;
+
 var AppRouter = Backbone.Router.extend({
     routes : {
         '' : 'settings',

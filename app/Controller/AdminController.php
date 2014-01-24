@@ -57,7 +57,8 @@ class AdminController extends AppController
 
     private function saveOccupation()
     {
-        if($this->Occupation->save($this->request->data))
+        $data = (array) json_decode($this->request->data['model']);
+        if($this->Occupation->save($data))
         {
             return array(
                 'id' => $this->Occupation->id,
@@ -92,7 +93,7 @@ return $result;
 
         $this->autoRender = false;
 
-        if($this->request->is('post'))
+        if($this->request->is('post') || $this->request->is('put'))
         {
             $out = $this->saveResource();
         }
@@ -134,7 +135,8 @@ return $result;
 
     private function saveResource()
     {
-        if($this->Resource->save($this->request->data))
+        $data = (array) json_decode($this->request->data['model']);
+        if($this->Resource->save($data))
         {
             return array(
                 'id' => $this->Resource->id,

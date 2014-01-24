@@ -3,13 +3,11 @@ var OccupationView = Backbone.View.extend({
 
     events : {
         'click .deleteOccupation' : 'delete',
+        'change input[type=text]' : 'updateName',
     },
 
     initialize : function() {
         this.template = _.template(templates.occupationTemplate);
-
-        this.listenTo(this.model, 'change', this.render);
-        this.listenTo(this.model, 'destroy', this.remove);
     },
 
     render : function() {
@@ -17,8 +15,13 @@ var OccupationView = Backbone.View.extend({
         return this;
     },
 
+    updateName : function() {
+        this.model.set('name', $('input[type=text]', this.el).val());
+    },
+
     delete : function() {
-        this.model.destroy();
+        this.model.collection.remove(this.model);
+        $(this.el).remove();
         return false;
     },
 });
@@ -28,13 +31,11 @@ var ResourceView = Backbone.View.extend({
 
     events : {
         'click .deleteResource' : 'delete',
+        'change input[type=text]' : 'updateName',
     },
 
     initialize : function() {
         this.template = _.template(templates.resourceTemplate);
-
-        this.listenTo(this.model, 'change', this.render);
-        this.listenTo(this.model, 'destroy', this.remove);
     },
 
     render : function() {
@@ -42,8 +43,13 @@ var ResourceView = Backbone.View.extend({
         return this;
     },
 
+    updateName : function() {
+        this.model.set('name', $('input[type=text]', this.el).val());
+    },
+
     delete : function() {
-        this.model.destroy();
+        this.model.collection.remove(this.model);
+        $(this.el).remove();
         return false;
     },
 });
@@ -52,7 +58,7 @@ var FormView = Backbone.View.extend({
     events : {
         'click #addOccupation' : 'addOccupation',
         'click #addResource' : 'addResource',
-        'submit' : 'saveForm',
+        'submit' : 'save',
     },
 
     el : $('#mainContainer'),
@@ -111,6 +117,15 @@ var FormView = Backbone.View.extend({
     },
 
     save : function () {
+
+        this.resourceCollection.each(function(element){
+            element.save();
+        });
+
+console.info(this.occupationCollection);
+console.info(this.resourceCollection);
+return false;
+
         if(!this.validate())
         {
             return false;
