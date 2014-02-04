@@ -11,149 +11,81 @@ class AdminController extends AppController
 
     public function occupation($id = 0)
     {
-        $this->loadModel('Occupation');
-
-        $this->autoRender = false;
-
-        if($this->request->is('post'))
-        {
-            $out = $this->saveOccupation();
-        }
-        elseif($this->request->is('delete'))
-        {
-            $out = $this->deleteOccupation($id);
-        }
-        else
-        {
-            $out = $id ? $this->getOccupation($id) : $this->getAllOccupations();
-        }
-
-        header('Content-Type: application/json; charset=utf8');
-        echo json_encode($out);
-    }
-
-    private function getOccupation($id)
-    {
-        return $this->decodeOccupation($this->Occupation->findById($id));
-    }
-
-    private function getAllOccupations()
-    {
-        $out = array();
-
-        $occupations = $this->Occupation->find('all');
-        foreach($occupations as $item)
-        {
-            $out[] = $this->decodeOccupation($item);
-        }
-
-        return $out;
-    }
-
-    private function decodeOccupation($data)
-    {
-        return $data['Occupation'];
-    }
-
-    private function saveOccupation()
-    {
-        $data = (array) json_decode($this->request->data['model']);
-        if($this->Occupation->save($data))
-        {
-            return array(
-                'id' => $this->Occupation->id,
-            );
-        }
-
-        return array(
-            'error' => $this->Occupation->validationErrors,
-        );
-    }
-
-    private function deleteOccupation($id)
-    {
-        $result = array();
-return $result;
-
-        if($this->Occupation->delete($id))
-        {
-            $result['deleted'] = 1;
-        }
-        else
-        {
-            $result['error'] = 1;
-        }
-
-        return $result;
+        $this->restApi('Occupation', $id);
     }
 
     public function resource($id = 0)
     {
-        $this->loadModel('Resource');
+        $this->restApi('Resource', $id);
+    }
+
+    public function course($id = 0)
+    {
+        $this->restApi('Course', $id);
+    }
+
+    private function restApi($model, $id)
+    {
+        $this->loadModel($model);
 
         $this->autoRender = false;
 
         if($this->request->is('post') || $this->request->is('put'))
         {
-            $out = $this->saveResource();
+            $data = (array) json_decode($this->request->data['model']);
+            $out = $this->save($model, $data);
         }
         elseif($this->request->is('delete'))
         {
-            $out = $this->deleteResource($id);
+            $out = $this->delete($model, $id);
         }
         else
         {
-            $out = $id ? $this->getResource($id) : $this->getAllResources();
+            $out = $id ? $this->get($model, $id) : $this->getAll($model);
         }
 
         header('Content-Type: application/json; charset=utf8');
         echo json_encode($out);
     }
 
-    private function getResource($id)
+    private function get($model, $id)
     {
-        return $this->decodeResource($this->Resource->findById($id));
+        $data = $this->$model->findById($id);
+        return $data[$model];
     }
 
-    private function getAllResources()
+    private function getAll($model)
     {
         $out = array();
 
-        $resources = $this->Resource->find('all');
-        foreach($resources as $item)
+        $data = $this->$model->find('all');
+        foreach($data as $item)
         {
-            $out[] = $this->decodeResource($item);
+            $out[] = $item[$model];
         }
 
         return $out;
     }
 
-    private function decodeResource($data)
+    private function save($model, $data)
     {
-        return $data['Resource'];
-    }
-
-    private function saveResource()
-    {
-        $data = (array) json_decode($this->request->data['model']);
-        if($this->Resource->save($data))
+        if($this->$model->save($data))
         {
             return array(
-                'id' => $this->Resource->id,
+                'id' => $this->$model->id,
             );
         }
 
         return array(
-            'error' => $this->Resource->validationErrors,
+            'error' => $this->$model->validationErrors,
         );
     }
 
-    private function deleteResource($id)
+    private function delete($model, $id)
     {
         $result = array();
-return $result;
 
-        if($this->Resource->delete($id))
+        if($this->$model->delete($id))
         {
             $result['deleted'] = 1;
         }

@@ -22,3 +22,11 @@ CREATE TABLE IF NOT EXISTS `resources` (
     `name` varchar(32) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `courses` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `name` varchar(32) NOT NULL,
+    `day` TINYINT(1) NOT NULL,
+    `number` TINYINT(1) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;

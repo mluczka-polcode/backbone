@@ -45,10 +45,10 @@ var FormView = Backbone.View.extend({
 
     renderForm : function (eventName) {
         $(this.el).html(this.template({
-            occupations : ['developer', 'entrepreneur', 'student'],
+            occupations : config.occupations,
             daysCount : 3,
             coursesCount : 3,
-            resources : ['drawer', 'calculator', 'computer', 'projector', 'gadget'],
+            resources : config.resources,
             data : this.model.attributes
         }));
 

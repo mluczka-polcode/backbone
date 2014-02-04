@@ -8,6 +8,29 @@ class CFormsController extends AppController
 
     public function index()
     {
+        $this->set('formsConfig', json_encode(array(
+            'occupations' => $this->getOccupationsList(),
+            'resources'   => $this->getResourcesList(),
+        )));
+    }
+
+    private function getOccupationsList()
+    {
+        $this->loadModel('Occupation');
+        $out = $this->Occupation->find('list', array(
+            'fields' => array('name')
+        ));
+
+        return array_values($out);
+    }
+
+    private function getResourcesList()
+    {
+        $this->loadModel('Resource');
+        $out = $this->Resource->find('list', array(
+            'fields' => array('name')
+        ));
+        return array_values($out);
     }
 
     public function api($id = 0)

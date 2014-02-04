@@ -1,13 +1,13 @@
-var OccupationView = Backbone.View.extend({
+var CommonView = Backbone.View.extend({
     tagName :  "li",
 
     events : {
-        'click .deleteOccupation' : 'delete',
-        'change input[type=text]' : 'updateName',
+        'click .delete' : 'delete',
+        'change input[type=text]' : 'update',
     },
 
-    initialize : function() {
-        this.template = _.template(templates.occupationTemplate);
+    initialize : function(options) {
+        this.template = _.template(options.template);
     },
 
     render : function() {
@@ -15,184 +15,98 @@ var OccupationView = Backbone.View.extend({
         return this;
     },
 
-    updateName : function() {
+    update : function() {
         this.model.set('name', $('input[type=text]', this.el).val());
+        this.model.save();
     },
 
-    delete : function() {
-        this.model.collection.remove(this.model);
-        $(this.el).remove();
-        return false;
+    delete : function(e) {
+        e.preventDefault();
+
+        if(!this.model.isNew() && !confirm('Are you sure?'))
+        {
+            return;
+        }
+
+        var self = this;
+        this.model.destroy({success:function(){
+            $(self.el).remove();
+        }});
     },
 });
 
-var ResourceView = Backbone.View.extend({
-    tagName :  "li",
-
+var CoursesView = CommonView.extend({
     events : {
-        'click .deleteResource' : 'delete',
-        'change input[type=text]' : 'updateName',
+        'change input[type=text]' : 'update',
+        'change select' : 'update'
     },
-
-    initialize : function() {
-        this.template = _.template(templates.resourceTemplate);
-    },
-
-    render : function() {
-        $(this.el).html(this.template(this.model.toJSON()));
-        return this;
-    },
-
-    updateName : function() {
+    update : function() {
         this.model.set('name', $('input[type=text]', this.el).val());
-    },
-
-    delete : function() {
-        this.model.collection.remove(this.model);
-        $(this.el).remove();
-        return false;
-    },
+        this.model.set('day', $('select.day', this.el).val());
+        this.model.set('number', $('select.number', this.el).val());
+        this.model.save();
+    }
 });
 
 var FormView = Backbone.View.extend({
     events : {
-        'click #addOccupation' : 'addOccupation',
-        'click #addResource' : 'addResource',
-        'submit' : 'save',
+        'click #addResource' : 'addResource'
     },
 
     el : $('#mainContainer'),
 
     initialize : function () {
         this.template = _.template(templates.adminTemplate);
-        _.bindAll(this, 'render', 'addOccupation', 'appendOccupation', 'appendAllOccupations',  'save');
+        _.bindAll(this, 'render', 'append');
 
+        var self = this;
+
+        // occupations
         this.occupationCollection = new OccupationCollection();
-
-        this.listenTo(this.occupationCollection, 'add',   this.appendOccupation);
-        this.listenTo(this.occupationCollection, 'reset', this.appendAllOccupations);
-
+        this.delegateEvents(_.extend(this.events, {
+            'click #addOccupation' : function() { self.occupationCollection.add({}); },
+        }));
+        this.listenTo(this.occupationCollection, 'add', function(item) {
+            self.append('occupationsContainer', item, templates.occupationTemplate);
+        });
         this.occupationCollection.fetch();
 
+        // resources
         this.resourceCollection = new ResourceCollection();
-
-        this.listenTo(this.resourceCollection, 'add',   this.appendResource);
-        this.listenTo(this.resourceCollection, 'reset', this.appendAllResources);
-
+        this.delegateEvents(_.extend(this.events, {
+            'click #addResource' : function() { self.resourceCollection.add({}); },
+        }));
+        this.listenTo(this.resourceCollection, 'add', function(item) {
+            self.append('resourcesContainer', item, templates.resourceTemplate);
+        });
         this.resourceCollection.fetch();
+
+        // courses
+        this.courseCollection = new CourseCollection();
+        this.delegateEvents(_.extend(this.events, {
+            'click #addCourse' : function() { self.courseCollection.add({}); },
+        }));
+        this.listenTo(this.courseCollection, 'add', function(item) {
+            self.append('coursesContainer', item, templates.courseTemplate, CoursesView);
+        });
+        this.courseCollection.fetch();
     },
 
     render : function (eventName) {
-        console.info('render');
         $(this.el).html(this.template());
         return this;
     },
 
-    addOccupation : function() {
-        this.occupationCollection.add(new Occupation());
-        return false;
-    },
-
-    appendOccupation : function(occupation) {
-      var view = new OccupationView({model: occupation});
-      $('#occupationsContainer', this.el).append(view.render().el);
-    },
-
-    appendAllOccupations : function() {
-      this.occupationCollection.each(this.appendOccupation, this);
-    },
-
-    addResource : function() {
-        this.resourceCollection.add(new Resource());
-        return false;
-    },
-
-    appendResource : function(resource) {
-      var view = new ResourceView({model: resource});
-      $('#resourcesContainer', this.el).append(view.render().el);
-    },
-
-    appendAllResources : function() {
-      this.resourceCollection.each(this.appendResource, this);
-    },
-
-    save : function () {
-
-        this.resourceCollection.each(function(element){
-            element.save();
+    append : function(id, item, template, viewClass) {
+        if(!viewClass)
+        {
+            viewClass = CommonView;
+        }
+        var view = new viewClass({
+            model    : item,
+            template : template
         });
-
-console.info(this.occupationCollection);
-console.info(this.resourceCollection);
-return false;
-
-        if(!this.validate())
-        {
-            return false;
-        }
-
-        var data = this.model.attributes;
-        for(var i = 0; i < this.multiFields.length; i++)
-        {
-            data[this.multiFields[i]] = JSON.stringify(data[this.multiFields[i]]);
-        }
-
-        var self = this;
-        Backbone.ajax({
-            dataType : 'json',
-            url : 'http://conference.local/cforms/api',
-            method : 'post',
-            data : data,
-            success : function(val) {
-                app.navigate('form/view/' + val.id, {trigger: true});
-            },
-            error : function (xhr, ajaxOptions, thrownError) {
-                alert('Error code ' + xhr.status + '\n' + thrownError);
-            }
-        });
-
-        return false;
-    },
-
-    validate : function() {
-        try {
-            this.updateModel();
-            this.model.validate();
-        } catch(e) {
-            this.showValidationError(e);
-            return false;
-        }
-
-        return true;
-    },
-
-    updateModel : function() {
-        var formData = $('#conferenceForm').serializeJSON();
-        formData.hasCard = $('#f_hasCard').prop('checked');
-        formData.cardNumber = formData.hasCard ? $('#f_cardNumber').val() : '';
-        for(var i = 0; i < this.multiFields.length; i++)
-        {
-            if(!formData[this.multiFields[i]])
-            {
-                formData[this.multiFields[i]] = [];
-            }
-        }
-        this.model.set(formData);
-    },
-
-    showValidationError : function(e) {
-        var field = $('input#f_' + e.field);
-        if(field && field[0])
-        {
-            field[0].focus();
-
-            var label = $('label[for="' + field[0].id + '"]');
-            if(label && label[0])
-            {
-                e.field = label[0].innerText;
-            }
-        }
-
-        alert(e.toString());
+        $('#' + id, this.el).append(view.render().el);
     }
+
 });

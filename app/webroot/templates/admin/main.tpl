@@ -4,7 +4,7 @@
 
         <ul id="occupationsContainer"></ul>
 
-        <button id="addOccupation">add</button>
+        <span id="addOccupation">add</span>
     </fieldset>
 
     <fieldset>
@@ -12,11 +12,14 @@
 
         <ul id="resourcesContainer"></ul>
 
-        <button id="addResource">add</button>
+        <span id="addResource">add</span>
     </fieldset>
 
     <fieldset>
-        <input type="submit" id="f_submit" value="save" />
-        <a href="#">cancel</a>
+        <legend>Courses</legend>
+
+        <ul id="coursesContainer"></ul>
+
+        <span id="addCourse">add</span>
     </fieldset>
 </form>

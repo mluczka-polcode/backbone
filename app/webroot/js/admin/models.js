@@ -1,17 +1,7 @@
-var Form = Backbone.Model.extend({
-    defaults : {
-        id : null,
-    },
-
-    validate : function() {
-        return true;
-    }
-});
-
 var Occupation = Backbone.Model.extend({
     urlRoot : '/admin/occupation',
 
-    defaults: {
+    defaults : {
         id   : null,
         name : '',
     }
@@ -25,7 +15,7 @@ var OccupationCollection = Backbone.Collection.extend({
 var Resource = Backbone.Model.extend({
     urlRoot : '/admin/resource',
 
-    defaults: {
+    defaults : {
         id   : null,
         name : '',
     }
@@ -34,4 +24,20 @@ var Resource = Backbone.Model.extend({
 var ResourceCollection = Backbone.Collection.extend({
     url : '/admin/resource',
     model : Resource
+});
+
+var Course = Backbone.Model.extend({
+    urlRoot : '/admin/course',
+
+    defaults : {
+        id     : null,
+        name   : '',
+        day    : '',
+        number : ''
+    }
+});
+
+var CourseCollection = Backbone.Collection.extend({
+    url : '/admin/course',
+    model : Course
 });
