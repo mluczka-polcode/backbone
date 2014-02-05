@@ -2,24 +2,24 @@
     <fieldset>
         <legend>Occupations</legend>
 
-        <ul id="occupationsContainer"></ul>
+        <div id="occupationsContainer"></div>
 
-        <span id="addOccupation">add</span>
+        <span class="button" id="addOccupation">add</span>
     </fieldset>
 
     <fieldset>
         <legend>Additional resources</legend>
 
-        <ul id="resourcesContainer"></ul>
+        <div id="resourcesContainer"></div>
 
-        <span id="addResource">add</span>
+        <span class="button" id="addResource">add</span>
     </fieldset>
 
     <fieldset>
         <legend>Courses</legend>
 
-        <ul id="coursesContainer"></ul>
+        <div id="coursesContainer"></div>
 
-        <span id="addCourse">add</span>
+        <span class="button" id="addCourse">add</span>
     </fieldset>
 </form>

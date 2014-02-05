@@ -70,7 +70,7 @@ var Form = Backbone.Model.extend({
     validateCourses : function() {
         var courses = this.attributes.courses;
 
-        for(var i = 0; i < courses.length; i++)
+        for(var i = 1; i < courses.length; i++)
         {
             var allEmpty = true;
             var allFilled = true;

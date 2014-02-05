@@ -1,0 +1,48 @@
+
+body { width: 900px; margin: 0 auto; text-align: center; }
+
+h1 { padding: 20px; text-align: center; }
+h2 { padding: 10px; text-align: center; }
+
+form { text-align: left; }
+fieldset { padding: 0 20px; margin-bottom: 20px; }
+input[type=text], select { width: 150px; }
+select[multiple], select[size] { vertical-align: top; }
+input[type=number] { width: 50px; }
+
+table { margin: 0 auto; }
+th, td { padding: 5px 10px; vertical-align: baseline; }
+
+.button {
+    padding: 2px 5px; font-weight: bold;
+    border: 1px outset #999; border-radius: 3px;
+    color: #FFF; background: #08991F; cursor: pointer;
+}
+
+a.button:hover {
+    color: #FFF;
+    text-decoration: none;
+}
+
+.delete {
+    background: #D00;
+}
+
+#personalData label { width: 120px; text-align: right; }
+#personalData input, #personalData select { margin-bottom: 10px; }
+#personalData input[type=checkbox] { margin-left: 125px; }
+#personalData label[for=f_hasCard] { width: auto; text-align: left; }
+
+#additionalPersons fieldset { margin-bottom: 15px; }
+#additionalPersons fieldset.person { float: left; }
+#additionalPersons label { width: 80px; }
+#additionalPersons .button { float: right; margin-right: 5px; }
+
+#courses table { margin: 0; }
+
+#addPerson { float: left; clear: both; }
+
+#formResult td { text-align: left; }
+
+#adminForm label { padding-right: 5px; }
+#adminForm input, #adminForm select { margin-right: 10px; }

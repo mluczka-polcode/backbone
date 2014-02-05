@@ -11,6 +11,7 @@ class CFormsController extends AppController
         $this->set('formsConfig', json_encode(array(
             'occupations' => $this->getOccupationsList(),
             'resources'   => $this->getResourcesList(),
+            'courses'     => $this->getCoursesList(),
         )));
     }
 
@@ -31,6 +32,29 @@ class CFormsController extends AppController
             'fields' => array('name')
         ));
         return array_values($out);
+    }
+
+    private function getCoursesList()
+    {
+        $out = array();
+
+        $this->loadModel('Course');
+        $data = $this->Course->find('list', array(
+            'fields' => array('name', 'day'),
+            'order' => 'day',
+        ));
+
+        foreach($data as $name => $day)
+        {
+            if(!isset($out[$day]))
+            {
+                $out[$day] = array();
+            }
+
+            $out[$day][] = $name;
+        }
+
+        return $out;
     }
 
     public function api($id = 0)

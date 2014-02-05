@@ -17,10 +17,11 @@ var FormView = Backbone.View.extend({
     personCounter : 0,
     MAX_PERSONS_COUNT : 15,
     multiFields : ['occupations', 'persons', 'courses', 'resources'],
+    config : config,
 
     events : {
         'click #addPerson' : 'addPerson',
-        'submit' : 'saveForm',
+        'click #register'  : 'saveForm',
     },
 
     initialize : function () {
@@ -45,10 +46,7 @@ var FormView = Backbone.View.extend({
 
     renderForm : function (eventName) {
         $(this.el).html(this.template({
-            occupations : config.occupations,
-            daysCount : 3,
-            coursesCount : 3,
-            resources : config.resources,
+            config : this.config,
             data : this.model.attributes
         }));
 
@@ -74,6 +72,7 @@ var FormView = Backbone.View.extend({
 
     renderDetails : function() {
         $(this.el).html(_.template(templates.detailsTemplate, {
+            config : this.config,
             id : this.model.id,
             data : this.model.attributes,
             price : this.model.calculatePrice()
@@ -82,7 +81,9 @@ var FormView = Backbone.View.extend({
         return this;
     },
 
-    addPerson : function() {
+    addPerson : function(e) {
+        e.preventDefault();
+
         this.personCollection.add(new Person({
             id: this.personCounter
         }));
@@ -99,7 +100,9 @@ var FormView = Backbone.View.extend({
         return false;
     },
 
-    saveForm : function () {
+    saveForm : function (e) {
+        e.preventDefault();
+
         if(!this.validateForm())
         {
             return false;
@@ -175,8 +178,8 @@ var PersonView = Backbone.View.extend({
     tagName : 'fieldset',
 
     events : {
-        'click .removePerson' : 'remove',
-        'change input'        : 'update'
+        'click .delete ' : 'remove',
+        'change input'   : 'update'
     },
 
     initialize : function(options) {

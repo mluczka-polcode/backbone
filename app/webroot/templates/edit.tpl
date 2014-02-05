@@ -17,8 +17,10 @@
 
         <label for="f_occupations">I am </label>
         <select id="f_occupations" name="occupations[]" multiple="multiple" size="3">
-            <% for(var i = 0; i < occupations.length; i++) { %>
-                <option value="<%- occupations[i] %>"<%= data.occupations && data.occupations.indexOf(occupations[i]) > -1 ? ' selected="selected"' : '' %>><%- occupations[i] %></option>
+            <% for(var i = 0; i < config.occupations.length; i++) { %>
+                <option value="<%- config.occupations[i] %>"<%= data.occupations && data.occupations.indexOf(config.occupations[i]) > -1 ? ' selected="selected"' : '' %>>
+                    <%- config.occupations[i] %>
+                </option>
             <% } %>
         </select>
         <br />
@@ -37,37 +39,36 @@
 
         <div id="additionalPersons"></div>
 
-        <button id="addPerson">add person</button>
+        <span class="button" id="addPerson">add person</span>
     </fieldset>
 
     <fieldset id="courses">
         <legend>Courses</legend>
 
-        <table>
-            <tr>
-                <th>&nbsp;</th>
-                <% for(var i = 0; i < coursesCount; i++) { %>
-                    <th>course #<%- i + 1 %></th>
+        <% var days = Object.keys(config.courses) %>
+        <% for(var i = 0; i < days.length; i++) { %>
+            <fieldset>
+                <% var day = days[i] %>
+                <legend>day #<%- day %></legend>
+
+                <table>
+                <% for(var j = 0; j < config.courses[day].length; j++) { %>
+                    <% var value = data.courses && data.courses[day] ? data.courses[day][j] : 0; %>
+                    <% var input_id = 'f_course_' + day + '_' + j; %>
+                    <tr>
+                        <td><label for="<%- input_id %>"><%- config.courses[day][j] %></label></td>
+                        <td><input type="number" id="<%- input_id %>" name="courses[<%- day %>][<%- j %>]" value="<%- value %>" min="0" max="<%- config.courses[day].length %>" placeholder="1-<%- config.courses[day].length %>" /></td>
+                    </tr>
                 <% } %>
-            </tr>
-            <% for(var i = 0; i < daysCount; i++) { %>
-                <tr class="courses-day">
-                    <th>day #<%- i + 1 %></th>
-                    <% for(var j = 0; j < coursesCount; j++) { %>
-                        <td>
-                            <% var value = data.courses && data.courses[i] ? data.courses[i][j] : 0; %>
-                            <input type="number" id="f_course_<%- i %>_<%- j %>" name="courses[<%- i %>][<%- j %>]" value="<%- value %>" min="0" max="<%- coursesCount %>" placeholder="1-<%- coursesCount%>" />
-                        </td>
-                    <% } %>
-                </tr>
-            <% } %>
-        </table>
+                </table>
+            </fieldset>
+        <% } %>
     </fieldset>
 
     <fieldset id="additionalResources">
         <legend>Additional resources</legend>
 
-        <% resources.forEach(function(res) { %>
+        <% config.resources.forEach(function(res) { %>
             <input type="number" id="f_ar_<%- res %>" name="resources[<%- res %>]" value="<%- data.resources ? data.resources[res] : 0 %>" min="0" placeholder="0" />
             <label for="f_ar_<%- res %>"><%- res %>(s)</label>
             <br />
@@ -75,7 +76,7 @@
     </fieldset>
 
     <fieldset class="submit">
-        <input type="submit" id="f_submit" value="register" />
+        <span class="button" id="register">register</span>
         <a href="#">back to list</a>
     </fieldset>
 </form>

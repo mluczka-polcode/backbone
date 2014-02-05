@@ -1,17 +1,17 @@
 <div id="formResult">
     <div>
         <h3>Personal data</h3>
-        <dl>
-            <dt>First name</dt><dd><%- data.firstName %></dd>
-            <dt>Last name</dt><dd><%- data.lastName %></dd>
-            <dt>Phone number</dt><dd><%- data.phone %></dd>
+        <table>
+            <tr><th>First name</th><td><%- data.firstName %></td></tr>
+            <tr><th>Last name</th><td><%- data.lastName %></td></tr>
+            <tr><th>Phone number</th><td><%- data.phone %></td></tr>
             <% if(data.occupations && data.occupations.length) { %>
-                <dt>Occupation</dt><dd><%- data.occupations.join(', ') %></dd>
+                <tr><th>Occupation</th><td><%- data.occupations.join(', ') %></td></tr>
             <% } %>
             <% if(data.cardNumber) { %>
-                <dt>Card number</dt><dd><%- data.cardNumber %></dd>
+                <tr><th>Card number</th><td><%- data.cardNumber %></td></tr>
             <% } %>
-        </dl>
+        </table>
         <br />
     </div>
 
@@ -40,15 +40,18 @@
         <table>
             <tr>
                 <th>&nbsp;</th>
-                <% for(var i = 0; i < data.courses[0].length; i++) { %>
+                <% for(var i = 0; i < config.coursesCount; i++) { %>
                     <th>course #<%= i + 1 %></th>
                 <% } %>
             </tr>
-            <% for(var i = 0; i < data.courses.length; i++) { %>
+            <% for(var i = 1; i < data.courses.length; i++) { %>
                 <tr>
                     <th>day #<%= i + 1 %></th>
                     <% for(var j = 0; j < data.courses[i].length; j++) { %>
-                        <th><%- data.courses && data.courses[i] ? data.courses[i][j] : '' %></th>
+                        <th>
+                            <%- config.courses[i][j] %><br />
+                            <%- data.courses && data.courses[i] ? data.courses[i][j] : '' %>
+                        </th>
                     <% } %>
                 </tr>
             <% } %>
@@ -73,7 +76,5 @@
         <h3>Price: $<%- price %></h3>
     </div>
 
-    <a href="#/form/edit/<%- id %>">edit form</a>
-    |
-    <a href="#">back to list</a>
+    <a href="#/form/edit/<%- id %>">edit form</a> | <a href="#">back to list</a>
 </div>

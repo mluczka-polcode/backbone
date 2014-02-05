@@ -1,7 +1,5 @@
 <?php App::uses('Debugger', 'Utility'); ?>
 
-<h2>Conference forms</h2>
-
 <section id="mainContainer"></section>
 
 <div id="forms-content"></div>

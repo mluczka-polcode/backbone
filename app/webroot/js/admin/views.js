@@ -1,6 +1,4 @@
 var CommonView = Backbone.View.extend({
-    tagName :  "li",
-
     events : {
         'click .delete' : 'delete',
         'change input[type=text]' : 'update',
@@ -37,13 +35,13 @@ var CommonView = Backbone.View.extend({
 
 var CoursesView = CommonView.extend({
     events : {
+        'click .delete' : 'delete',
         'change input[type=text]' : 'update',
         'change select' : 'update'
     },
     update : function() {
         this.model.set('name', $('input[type=text]', this.el).val());
         this.model.set('day', $('select.day', this.el).val());
-        this.model.set('number', $('select.number', this.el).val());
         this.model.save();
     }
 });
